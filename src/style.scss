@@ -1,0 +1,18 @@
+:root {
+  background-color: #242424;
+}
+
+form > div {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+
+  label,
+  legend {
+    color: white;
+  }
+
+  input[data-error="true"] {
+    border: 1px solid red;
+  }
+}
