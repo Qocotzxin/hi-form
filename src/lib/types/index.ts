@@ -16,6 +16,11 @@ export type ChangeCallbacks = Record<
   }
 >;
 
+export type FormFields =
+  | HTMLInputElement
+  | HTMLSelectElement
+  | HTMLTextAreaElement;
+
 export interface FormulaForm {
   [fieldName: string]: {
     value: unknown;
@@ -31,4 +36,15 @@ export enum Events {
   input = "input",
   focus = "focus",
   blur = "blur",
+  submit = "submit",
+}
+
+export enum FormElements {
+  input = "input",
+  textarea = "textarea",
+  select = "select",
+}
+
+export enum DataAttributes {
+  error = "data-formula-error",
 }
