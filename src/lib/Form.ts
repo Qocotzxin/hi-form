@@ -1,12 +1,11 @@
 import { createFormData } from "./data";
 import { getInputsAsArray } from "./dom";
-import {
-  submit,
-  subscribeToInputChanges,
-  usubscribeFromInputChanges,
-} from "./event-handling";
+import { eventHandlingFns } from "./event-handling";
 import { subject } from "./subscription";
 import { FormulaValidations } from "./types";
+
+const { subscribeToInputChanges, submit, usubscribeFromInputChanges } =
+  eventHandlingFns;
 
 export const formula = (
   form: HTMLFormElement,
