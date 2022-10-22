@@ -4,8 +4,12 @@ import { eventHandlingFns } from "./event-handling";
 import { subject } from "./subscription";
 import { FormulaValidations } from "./types";
 
-const { subscribeToInputChanges, submit, usubscribeFromInputChanges } =
-  eventHandlingFns;
+const {
+  subscribeToInputChanges,
+  usubscribeFromInputChanges,
+  subscribeToSubmitEvent,
+  unsubscribeFromSubmitEvent,
+} = eventHandlingFns;
 
 export const formula = (
   form: HTMLFormElement,
@@ -19,12 +23,20 @@ export const formula = (
   const inputs = getInputsAsArray(form);
   const formData = createFormData(inputs);
   const callbacks = subscribeToInputChanges(inputs, formData, options);
+  const submitCallback = subscribeToSubmitEvent(
+    form,
+    inputs,
+    formData,
+    options
+  );
 
   return {
     value: () => formData,
-    submit: () => submit(inputs, formData, options),
     subscribe: (fn: () => void) => subject.subscribe(fn),
     unsubscribe: () => subject.unsubscribe(),
-    finish: () => usubscribeFromInputChanges(inputs, callbacks, options),
+    finish: () => {
+      usubscribeFromInputChanges(inputs, callbacks, options);
+      unsubscribeFromSubmitEvent(form, submitCallback);
+    },
   };
 };

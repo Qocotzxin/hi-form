@@ -6,6 +6,7 @@ import {
   FormulaForm,
   FormulaValidations,
   FormulaValidationsOptions,
+  UserEvent,
 } from "./types";
 import { applyFieldValidation } from "./validation";
 
@@ -62,6 +63,28 @@ export const eventHandlingFns = {
   },
 
   /**
+   * Subscribes to the form submit event and returns the added listener.
+   */
+  subscribeToSubmitEvent: (
+    form: HTMLFormElement,
+    inputs: FormFields[],
+    formData: FormulaForm,
+    options?: FormulaValidations
+  ): UserEvent => {
+    const { onSubmit } = eventHandlingFns;
+    const onSubmitCallback = onSubmit(inputs, formData, options);
+    form.addEventListener(Events.submit, onSubmitCallback);
+    return onSubmitCallback;
+  },
+
+  /**
+   * Removes the listener attached to the form submit event.
+   */
+  unsubscribeFromSubmitEvent: (form: HTMLFormElement, callback: UserEvent) => {
+    form.removeEventListener(Events.submit, callback);
+  },
+
+  /**
    * Callback to be executed on focus event.
    * Does not execute validation.
    */
@@ -105,8 +128,7 @@ export const eventHandlingFns = {
     inputOptions?: FormulaValidationsOptions
   ) => {
     return (e: Event) => {
-      const value = (e.target as FormFields).value;
-      formData[input.name].value = value;
+      formData[input.name].value = (e.target as FormFields).value;
       applyFieldValidation(input, formData, inputOptions);
 
       if (!formData[input.name].isDirty) {
@@ -119,25 +141,26 @@ export const eventHandlingFns = {
   /**
    * Callback to be executed on submit event.
    * Always executes validation.
-   * TODO: check if this should be event based since now, it needs to be called programatically.
    */
-  submit: (
+  onSubmit: (
     inputs: FormFields[],
     formData: FormulaForm,
     options?: FormulaValidations
-  ): { isValid: boolean } => {
-    let isValid = true;
+  ) => {
+    return (e: Event) => {
+      e.preventDefault();
+      let isValid = true;
 
-    for (const input of inputs) {
-      formData[input.name].value = input.value;
-      applyFieldValidation(input, formData, options && options[input.name]);
+      for (const input of inputs) {
+        formData[input.name].value = input.value;
+        applyFieldValidation(input, formData, options && options[input.name]);
 
-      if (!formData[input.name].isValid) {
-        isValid = false;
+        if (!formData[input.name].isValid) {
+          isValid = false;
+        }
       }
-    }
 
-    emit(Events.submit, formData);
-    return { isValid };
+      emit(Events.submit, { formData, isValid });
+    };
   },
 };

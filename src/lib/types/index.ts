@@ -10,9 +10,9 @@ export interface FormulaValidationsOptions {
 export type ChangeCallbacks = Record<
   string,
   {
-    change: (e: Event) => void;
-    focus: (e: Event) => void;
-    blur: (e: Event) => void;
+    change: UserEvent;
+    focus: UserEvent;
+    blur: UserEvent;
   }
 >;
 
@@ -45,6 +45,15 @@ export enum FormElements {
   select = "select",
 }
 
+export enum FormSubmitElements {
+  input = "input",
+  button = "button",
+}
+
 export enum DataAttributes {
   error = "data-formula-error",
 }
+
+export const TYPE_SUBMIT = '[type="submit]';
+
+export type UserEvent = (e: Event) => void;

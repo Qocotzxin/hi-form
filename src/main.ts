@@ -11,8 +11,3 @@ const form = formula(document.querySelector<HTMLFormElement>("form")!, {
 });
 
 form.subscribe(console.log);
-
-document.querySelector("button")?.addEventListener("click", (e: Event) => {
-  e.preventDefault();
-  form.submit();
-});

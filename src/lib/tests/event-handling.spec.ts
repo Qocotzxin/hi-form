@@ -5,7 +5,7 @@ import { generateForm } from "../utils/testing";
 import { emit } from "../subscription";
 import { applyFieldValidation } from "../validation";
 
-const { fields } = generateForm();
+const { form, fields } = generateForm();
 
 vi.mock("../subscription", () => ({
   emit: vi.fn(),
@@ -164,6 +164,48 @@ describe("Event handling functions.", () => {
     });
   });
 
+  describe("subscribeToSubmitEvent", () => {
+    it("Should call onSubmit.", () => {
+      const onSubmitSpy = vi.spyOn(eventHandlingFns, "onSubmit");
+
+      eventHandlingFns.subscribeToSubmitEvent(form, fields, {});
+
+      expect(onSubmitSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it("Should add a submit event listener to the form element.", () => {
+      const onSubmitSpy = vi.spyOn(eventHandlingFns, "onSubmit");
+      const formSpy = vi.spyOn(form, "addEventListener");
+
+      eventHandlingFns.subscribeToSubmitEvent(form, fields, {});
+
+      expect(onSubmitSpy).toHaveBeenCalledTimes(1);
+      expect(formSpy).toHaveBeenCalledWith("submit", expect.any(Function));
+    });
+
+    it("Should return the attached callback.", () => {
+      const expectOfTypeFunction = expect.any(Function);
+      const callback = eventHandlingFns.subscribeToSubmitEvent(
+        form,
+        fields,
+        {}
+      );
+
+      expect(callback).toEqual(expectOfTypeFunction);
+    });
+  });
+
+  describe("usubscribeFromSubmitEvent", () => {
+    it("Should remove submit event listener from the form.", () => {
+      const formSpy = vi.spyOn(form, "removeEventListener");
+
+      eventHandlingFns.unsubscribeFromSubmitEvent(form, vi.fn());
+
+      expect(formSpy).toHaveBeenCalledTimes(1);
+      expect(formSpy).toHaveBeenCalledWith("submit", expect.any(Function));
+    });
+  });
+
   describe("onFocus", () => {
     it("Should return a function that, when executed, updates isFocused to true within formData.", () => {
       const formData: FormulaForm = {
@@ -290,6 +332,81 @@ describe("Event handling functions.", () => {
       changeEvent({ target: { value: mockEmail } } as unknown as Event);
 
       expect(emit).toHaveBeenCalledWith("input", formData.email);
+    });
+  });
+
+  describe("onSubmit", () => {
+    it("Should return a function that, when executed, calls preventDefault.", () => {
+      const preventDefaultMock = vi.fn();
+      const formData: FormulaForm = {
+        email: {
+          isFocused: false,
+          value: "",
+          isValid: false,
+          isTouched: false,
+          isDirty: false,
+        },
+        comments: {
+          isFocused: false,
+          value: "",
+          isValid: false,
+          isTouched: false,
+          isDirty: false,
+        },
+      };
+      const submitEvent = eventHandlingFns.onSubmit(fields, formData);
+      submitEvent({ preventDefault: preventDefaultMock } as unknown as Event);
+
+      expect(preventDefaultMock).toHaveBeenCalled();
+    });
+
+    it("Should call applyFieldValidation 1 time per input.", () => {
+      const formData: FormulaForm = {
+        email: {
+          isFocused: false,
+          value: "",
+          isValid: false,
+          isTouched: false,
+          isDirty: false,
+        },
+        comments: {
+          isFocused: false,
+          value: "",
+          isValid: false,
+          isTouched: false,
+          isDirty: false,
+        },
+      };
+      const submitEvent = eventHandlingFns.onSubmit(fields, formData);
+      submitEvent({ preventDefault: vi.fn() } as unknown as Event);
+
+      expect(applyFieldValidation).toHaveBeenCalledTimes(2);
+    });
+
+    it("Should emit the updated form data and a validity boolean.", () => {
+      const formData: FormulaForm = {
+        email: {
+          isFocused: false,
+          value: "",
+          isValid: false,
+          isTouched: false,
+          isDirty: false,
+        },
+        comments: {
+          isFocused: false,
+          value: "",
+          isValid: false,
+          isTouched: false,
+          isDirty: false,
+        },
+      };
+      const submitEvent = eventHandlingFns.onSubmit(fields, formData);
+      submitEvent({ preventDefault: vi.fn() } as unknown as Event);
+
+      expect(emit).toHaveBeenCalledWith("submit", {
+        formData,
+        isValid: false,
+      });
     });
   });
 });

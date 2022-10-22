@@ -2,6 +2,7 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
+    clearMocks: true,
     includeSource: ["src/**/*.ts"],
     environment: "jsdom",
     coverage: {
