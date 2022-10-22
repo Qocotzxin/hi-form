@@ -4,13 +4,6 @@ import { eventHandlingFns } from "./event-handling";
 import { subject } from "./subscription";
 import { FormulaValidations } from "./types";
 
-const {
-  subscribeToInputChanges,
-  usubscribeFromInputChanges,
-  subscribeToSubmitEvent,
-  unsubscribeFromSubmitEvent,
-} = eventHandlingFns;
-
 export const formula = (
   form: HTMLFormElement,
   options?: FormulaValidations
@@ -22,8 +15,12 @@ export const formula = (
   // Add warning if there are no inputs.
   const inputs = getInputsAsArray(form);
   const formData = createFormData(inputs);
-  const callbacks = subscribeToInputChanges(inputs, formData, options);
-  const submitCallback = subscribeToSubmitEvent(
+  const callbacks = eventHandlingFns.subscribeToInputChanges(
+    inputs,
+    formData,
+    options
+  );
+  const submitCallback = eventHandlingFns.subscribeToSubmitEvent(
     form,
     inputs,
     formData,
@@ -35,8 +32,8 @@ export const formula = (
     subscribe: (fn: () => void) => subject.subscribe(fn),
     unsubscribe: () => subject.unsubscribe(),
     finish: () => {
-      usubscribeFromInputChanges(inputs, callbacks, options);
-      unsubscribeFromSubmitEvent(form, submitCallback);
+      eventHandlingFns.unsubscribeFromInputChanges(inputs, callbacks, options);
+      eventHandlingFns.unsubscribeFromSubmitEvent(form, submitCallback);
     },
   };
 };

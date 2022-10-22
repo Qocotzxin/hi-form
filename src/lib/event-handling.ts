@@ -8,7 +8,7 @@ import {
   FormulaValidationsOptions,
   UserEvent,
 } from "./types";
-import { applyFieldValidation } from "./validation";
+import { validationFns } from "./validation";
 
 export const eventHandlingFns = {
   /**
@@ -46,7 +46,7 @@ export const eventHandlingFns = {
   /**
    * Unsubscribes from input (or change), focus and blur events.
    */
-  usubscribeFromInputChanges: (
+  unsubscribeFromInputChanges: (
     inputs: FormFields[],
     fns: ChangeCallbacks,
     options?: FormulaValidations
@@ -111,7 +111,7 @@ export const eventHandlingFns = {
         formData[input.name].isTouched = true;
 
         if (inputOptions?.validateDirtyOnly === false) {
-          applyFieldValidation(input, formData, inputOptions);
+          validationFns.applyFieldValidation(input, formData, inputOptions);
         }
       }
       emit(Events.blur, formData[input.name]);
@@ -129,7 +129,7 @@ export const eventHandlingFns = {
   ) => {
     return (e: Event) => {
       formData[input.name].value = (e.target as FormFields).value;
-      applyFieldValidation(input, formData, inputOptions);
+      validationFns.applyFieldValidation(input, formData, inputOptions);
 
       if (!formData[input.name].isDirty) {
         formData[input.name].isDirty = true;
@@ -153,7 +153,11 @@ export const eventHandlingFns = {
 
       for (const input of inputs) {
         formData[input.name].value = input.value;
-        applyFieldValidation(input, formData, options && options[input.name]);
+        validationFns.applyFieldValidation(
+          input,
+          formData,
+          options && options[input.name]
+        );
 
         if (!formData[input.name].isValid) {
           isValid = false;

@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import { eventHandlingFns } from "../event-handling";
 import { FormulaForm } from "../types";
-import { generateForm } from "../utils/testing";
+import { expectOfTypeFunction, generateForm } from "../utils/testing";
 import { emit } from "../subscription";
-import { applyFieldValidation } from "../validation";
+import { validationFns } from "../validation";
 
 const { form, fields } = generateForm();
 
@@ -12,7 +12,7 @@ vi.mock("../subscription", () => ({
 }));
 
 vi.mock("../validation", () => ({
-  applyFieldValidation: vi.fn(),
+  validationFns: { applyFieldValidation: vi.fn() },
 }));
 
 describe("Event handling functions.", () => {
@@ -88,7 +88,6 @@ describe("Event handling functions.", () => {
     });
 
     it("Should return an object with all the callbacks.", () => {
-      const expectOfTypeFunction = expect.any(Function);
       const callbacks = eventHandlingFns.subscribeToInputChanges(fields, {});
 
       expect(callbacks).toEqual({
@@ -106,11 +105,11 @@ describe("Event handling functions.", () => {
     });
   });
 
-  describe("usubscribeFromInputChanges", () => {
+  describe("unsubscribeFromInputChanges", () => {
     it("Should remove every event listener from each input.", () => {
       const inputSpy = vi.spyOn(fields[0], "removeEventListener");
       const textareaSpy = vi.spyOn(fields[1], "removeEventListener");
-      eventHandlingFns.usubscribeFromInputChanges(fields, {
+      eventHandlingFns.unsubscribeFromInputChanges(fields, {
         email: { change: vi.fn(), blur: vi.fn(), focus: vi.fn() },
         comments: { change: vi.fn(), blur: vi.fn(), focus: vi.fn() },
       });
@@ -147,7 +146,7 @@ describe("Event handling functions.", () => {
 
     it("Should remove 'input' event listener when the option is passed to the specified field.", () => {
       const inputSpy = vi.spyOn(fields[0], "removeEventListener");
-      eventHandlingFns.usubscribeFromInputChanges(
+      eventHandlingFns.unsubscribeFromInputChanges(
         fields,
         {
           email: { change: vi.fn(), blur: vi.fn(), focus: vi.fn() },
@@ -184,7 +183,6 @@ describe("Event handling functions.", () => {
     });
 
     it("Should return the attached callback.", () => {
-      const expectOfTypeFunction = expect.any(Function);
       const callback = eventHandlingFns.subscribeToSubmitEvent(
         form,
         fields,
@@ -256,7 +254,7 @@ describe("Event handling functions.", () => {
 
       expect(formData.email.isFocused).toBe(false);
       expect(formData.email.isTouched).toBe(true);
-      expect(applyFieldValidation).not.toHaveBeenCalled();
+      expect(validationFns.applyFieldValidation).not.toHaveBeenCalled();
     });
 
     it("Should return a function that, when executed, isTouched is false and validateDirtyOnly is false, calls applyFieldValidation.", () => {
@@ -274,7 +272,7 @@ describe("Event handling functions.", () => {
       });
       blurEvent({} as Event);
 
-      expect(applyFieldValidation).toHaveBeenCalled();
+      expect(validationFns.applyFieldValidation).toHaveBeenCalled();
     });
 
     it("Should return a function that, when executed, emits an event using the behavior subject.", () => {
@@ -311,7 +309,7 @@ describe("Event handling functions.", () => {
 
       expect(formData.email.value).toBe(mockEmail);
       expect(formData.email.isDirty).toBe(true);
-      expect(applyFieldValidation).toHaveBeenCalled();
+      expect(validationFns.applyFieldValidation).toHaveBeenCalled();
       expect(emit).toHaveBeenCalledWith("change", formData.email);
     });
 
@@ -360,7 +358,7 @@ describe("Event handling functions.", () => {
       expect(preventDefaultMock).toHaveBeenCalled();
     });
 
-    it("Should call applyFieldValidation 1 time per input.", () => {
+    it("Should call applyFieldValidation 1 time per input passing undefined when there are no validators.", () => {
       const formData: FormulaForm = {
         email: {
           isFocused: false,
@@ -380,7 +378,58 @@ describe("Event handling functions.", () => {
       const submitEvent = eventHandlingFns.onSubmit(fields, formData);
       submitEvent({ preventDefault: vi.fn() } as unknown as Event);
 
-      expect(applyFieldValidation).toHaveBeenCalledTimes(2);
+      expect(validationFns.applyFieldValidation).toHaveBeenCalledTimes(2);
+      expect(validationFns.applyFieldValidation).toHaveBeenNthCalledWith(
+        1,
+        fields[0],
+        formData,
+        undefined
+      );
+      expect(validationFns.applyFieldValidation).toHaveBeenNthCalledWith(
+        2,
+        fields[1],
+        formData,
+        undefined
+      );
+    });
+
+    it("Should call applyFieldValidation 1 time per input passing validator functions when passed within options.", () => {
+      const validators = { validators: [(v: string) => !!v] };
+      const formData: FormulaForm = {
+        email: {
+          isFocused: false,
+          value: "",
+          isValid: false,
+          isTouched: false,
+          isDirty: false,
+        },
+        comments: {
+          isFocused: false,
+          value: "",
+          isValid: false,
+          isTouched: false,
+          isDirty: false,
+        },
+      };
+      const submitEvent = eventHandlingFns.onSubmit(fields, formData, {
+        email: validators,
+        comments: validators,
+      });
+      submitEvent({ preventDefault: vi.fn() } as unknown as Event);
+
+      expect(validationFns.applyFieldValidation).toHaveBeenCalledTimes(2);
+      expect(validationFns.applyFieldValidation).toHaveBeenNthCalledWith(
+        1,
+        fields[0],
+        formData,
+        validators
+      );
+      expect(validationFns.applyFieldValidation).toHaveBeenNthCalledWith(
+        2,
+        fields[1],
+        formData,
+        validators
+      );
     });
 
     it("Should emit the updated form data and a validity boolean.", () => {

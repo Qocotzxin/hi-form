@@ -1,3 +1,4 @@
+import { expect } from "vitest";
 import { FormFields } from "../types";
 
 export function generateForm(): {
@@ -14,3 +15,5 @@ export function generateForm(): {
 
   return { form, fields: [input, textarea] };
 }
+
+export const expectOfTypeFunction = expect.any(Function);
