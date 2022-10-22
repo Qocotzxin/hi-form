@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@types/ramda': ^0.28.15
   '@vitest/coverage-c8': ^0.24.3
+  husky: ^8.0.0
   jsdom: ^20.0.1
   ramda: ^0.28.0
   rxjs: ^7.5.7
@@ -18,6 +19,7 @@ dependencies:
 devDependencies:
   '@types/ramda': 0.28.15
   '@vitest/coverage-c8': 0.24.3_jsdom@20.0.1+sass@1.55.0
+  husky: 8.0.1
   jsdom: 20.0.1
   sass: 1.55.0
   typescript: 4.8.4
@@ -729,6 +731,12 @@ packages:
       debug: 4.3.4
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /husky/8.0.1:
+    resolution: {integrity: sha512-xs7/chUH/CKdOCs7Zy0Aev9e/dKOMZf3K1Az1nar3tzlv0jfqnYtu235bstsWTmXOR0EfINrPa97yy4Lz6RiKw==}
+    engines: {node: '>=14'}
+    hasBin: true
     dev: true
 
   /iconv-lite/0.6.3:
