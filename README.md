@@ -14,9 +14,9 @@ Formula works with native HTML forms. Because of this, every input should have a
 <form>
     <div>
     <label for="firstName">First name</label>
-    <input id="firstName" name="firstName" type="text" value="" />
+    <input id="firstName" name="firstName" type="text" />
     <label for="lastName">Last name</label>
-    <input id="lastName" name="lastName" type="text" value="" />
+    <input id="lastName" name="lastName" type="text" />
     <label for="age">Age</label>
     <input id="age" name="age" type="number" />
     <button type="submit">Submit</button>
@@ -26,8 +26,8 @@ Formula works with native HTML forms. Because of this, every input should have a
 
 If you see this example you will notice there are no extra attributes or binding that needs to happen, just a plain html form.
 
-Then, data manipulation will happen purely in Javascript through a minimal API. In order to start using formula you need to call the `formula` function and pass a form to it.
-Then is just a matter of subscribe to the changes by calling `subscribe`.
+Then, data manipulation will happen purely in Javascript through a minimal API. In order to start using formula you need to call the `formula` function and pass a `form` element to it.
+Then is just a matter of subscribing to the changes by calling `subscribe`:
 
 ```
 import { formula } from 'formula';
@@ -58,11 +58,11 @@ const form = formula(document.querySelector<HTMLFormElement>("form")!, {
 form.subscribe(console.log);
 ```
 
-In this case we pass a second argument which is an object where each key is an input `name` (the value you provided for name attribute) and the value is an object with multiple options that will apply for the specified field:
+In this case we pass a second argument that is an object where each key is an input `name` (the value you provided for name attribute) and the value is an object with multiple options that will apply for the specified field:
 
-- `validators` - an array of functions which should return a boolean or a string. The string returned by this function should be an error message associated to the validation that failed.
+- `validators` - an array of functions which should return a boolean or a string (`(value: any) => boolean | string`). The string returned by this function is usually an error message associated to the validation that failed.
 - `validateOn` - formula runs validations on different events, on of those is the `change` event. But the change event can be replaced by `input` event if you want to run validations each time the user types something in. Due to performance, `change` is recommended and is the default behavior, but `input` can be useful in several cases.
-- `validateDirtyOnly` - by default formula won't run validations on `blur` if the input value never changed (which means the user never typed any value). This behavior can be changed by settings `validateDirtyOnly` to false in which case, validations will be executed when the user focus the input and then leaves (e.g.: when moving through the inputs using `tab`).
+- `validateDirtyOnly` - by default formula won't run validations on `blur` if the input value never changed (which means the user never typed any value). This behavior can be changed by setting `validateDirtyOnly` to `false` in which case, validations will be executed when the user focus the input and then leaves (e.g.: when moving through the inputs using `tab`).
 
 ### Subscribing
 
