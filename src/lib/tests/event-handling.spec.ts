@@ -1,8 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 import { eventHandlingFns } from "../event-handling";
-import { FormulaForm } from "../types";
-import { expectOfTypeFunction, generateForm } from "../utils/testing";
 import { emit } from "../subscription";
+import {
+  expectOfTypeFunction,
+  generateForm,
+  generateFormData,
+} from "../utils/testing";
 import { validationFns } from "../validation";
 
 const { form, fields } = generateForm();
@@ -206,15 +209,7 @@ describe("Event handling functions.", () => {
 
   describe("onFocus", () => {
     it("Should return a function that, when executed, updates isFocused to true within formData.", () => {
-      const formData: FormulaForm = {
-        email: {
-          isFocused: false,
-          value: "",
-          isValid: false,
-          isTouched: false,
-          isDirty: false,
-        },
-      };
+      const formData = generateFormData();
       const focusEvent = eventHandlingFns.onFocus(fields[0], formData);
       focusEvent({} as Event);
 
@@ -222,15 +217,7 @@ describe("Event handling functions.", () => {
     });
 
     it("Should return a function that, when executed, emits an event using the behavior subject.", () => {
-      const formData: FormulaForm = {
-        email: {
-          isFocused: false,
-          value: "",
-          isValid: false,
-          isTouched: false,
-          isDirty: false,
-        },
-      };
+      const formData = generateFormData();
       const focusEvent = eventHandlingFns.onFocus(fields[0], formData);
       focusEvent({} as Event);
 
@@ -240,15 +227,7 @@ describe("Event handling functions.", () => {
 
   describe("onBlur", () => {
     it("Should return a function that, when executed, updates isFocused to false and isTouched to true within formData.", () => {
-      const formData: FormulaForm = {
-        email: {
-          isFocused: true,
-          value: "",
-          isValid: false,
-          isTouched: false,
-          isDirty: false,
-        },
-      };
+      const formData = generateFormData({ email: { isFocused: true } });
       const blurEvent = eventHandlingFns.onBlur(fields[0], formData);
       blurEvent({} as Event);
 
@@ -258,15 +237,7 @@ describe("Event handling functions.", () => {
     });
 
     it("Should return a function that, when executed, isTouched is false and validateDirtyOnly is false, calls applyFieldValidation.", () => {
-      const formData: FormulaForm = {
-        email: {
-          isFocused: true,
-          value: "",
-          isValid: false,
-          isTouched: false,
-          isDirty: false,
-        },
-      };
+      const formData = generateFormData({ email: { isFocused: true } });
       const blurEvent = eventHandlingFns.onBlur(fields[0], formData, {
         validateDirtyOnly: false,
       });
@@ -276,15 +247,8 @@ describe("Event handling functions.", () => {
     });
 
     it("Should return a function that, when executed, emits an event using the behavior subject.", () => {
-      const formData: FormulaForm = {
-        email: {
-          isFocused: false,
-          value: "",
-          isValid: false,
-          isTouched: false,
-          isDirty: false,
-        },
-      };
+      const formData = generateFormData();
+
       const blurEvent = eventHandlingFns.onBlur(fields[0], formData);
       blurEvent({} as Event);
 
@@ -295,15 +259,8 @@ describe("Event handling functions.", () => {
   describe("onChange", () => {
     it("Should return a function that, when executed, updates value and isDirty within formData and calls applyFieldValidation and emit.", () => {
       const mockEmail = "test@mail.com";
-      const formData: FormulaForm = {
-        email: {
-          isFocused: false,
-          value: "",
-          isValid: false,
-          isTouched: false,
-          isDirty: false,
-        },
-      };
+      const formData = generateFormData();
+
       const changeEvent = eventHandlingFns.onChange(fields[0], formData);
       changeEvent({ target: { value: mockEmail } } as unknown as Event);
 
@@ -315,15 +272,8 @@ describe("Event handling functions.", () => {
 
     it("Should call emit with input instead of change if validateOn value is input.", () => {
       const mockEmail = "test@mail.com";
-      const formData: FormulaForm = {
-        email: {
-          isFocused: false,
-          value: "",
-          isValid: false,
-          isTouched: false,
-          isDirty: false,
-        },
-      };
+      const formData = generateFormData();
+
       const changeEvent = eventHandlingFns.onChange(fields[0], formData, {
         validateOn: "input",
       });
@@ -336,22 +286,8 @@ describe("Event handling functions.", () => {
   describe("onSubmit", () => {
     it("Should return a function that, when executed, calls preventDefault.", () => {
       const preventDefaultMock = vi.fn();
-      const formData: FormulaForm = {
-        email: {
-          isFocused: false,
-          value: "",
-          isValid: false,
-          isTouched: false,
-          isDirty: false,
-        },
-        comments: {
-          isFocused: false,
-          value: "",
-          isValid: false,
-          isTouched: false,
-          isDirty: false,
-        },
-      };
+      const formData = generateFormData();
+
       const submitEvent = eventHandlingFns.onSubmit(fields, formData);
       submitEvent({ preventDefault: preventDefaultMock } as unknown as Event);
 
@@ -359,22 +295,8 @@ describe("Event handling functions.", () => {
     });
 
     it("Should call applyFieldValidation 1 time per input passing undefined when there are no validators.", () => {
-      const formData: FormulaForm = {
-        email: {
-          isFocused: false,
-          value: "",
-          isValid: false,
-          isTouched: false,
-          isDirty: false,
-        },
-        comments: {
-          isFocused: false,
-          value: "",
-          isValid: false,
-          isTouched: false,
-          isDirty: false,
-        },
-      };
+      const formData = generateFormData();
+
       const submitEvent = eventHandlingFns.onSubmit(fields, formData);
       submitEvent({ preventDefault: vi.fn() } as unknown as Event);
 
@@ -395,22 +317,8 @@ describe("Event handling functions.", () => {
 
     it("Should call applyFieldValidation 1 time per input passing validator functions when passed within options.", () => {
       const validators = { validators: [(v: string) => !!v] };
-      const formData: FormulaForm = {
-        email: {
-          isFocused: false,
-          value: "",
-          isValid: false,
-          isTouched: false,
-          isDirty: false,
-        },
-        comments: {
-          isFocused: false,
-          value: "",
-          isValid: false,
-          isTouched: false,
-          isDirty: false,
-        },
-      };
+      const formData = generateFormData();
+
       const submitEvent = eventHandlingFns.onSubmit(fields, formData, {
         email: validators,
         comments: validators,
@@ -433,22 +341,8 @@ describe("Event handling functions.", () => {
     });
 
     it("Should emit the updated form data and a validity boolean.", () => {
-      const formData: FormulaForm = {
-        email: {
-          isFocused: false,
-          value: "",
-          isValid: false,
-          isTouched: false,
-          isDirty: false,
-        },
-        comments: {
-          isFocused: false,
-          value: "",
-          isValid: false,
-          isTouched: false,
-          isDirty: false,
-        },
-      };
+      const formData = generateFormData();
+
       const submitEvent = eventHandlingFns.onSubmit(fields, formData);
       submitEvent({ preventDefault: vi.fn() } as unknown as Event);
 

@@ -3,8 +3,10 @@ import {
   FormFields,
   FormulaForm,
   FormulaValidationsOptions,
+  InputValidationState,
   ValidationFn,
 } from "./types";
+import { isString } from "./utils/type-helpers";
 
 export const validationFns = {
   /**
@@ -16,10 +18,12 @@ export const validationFns = {
     formData: FormulaForm,
     inputOptions?: FormulaValidationsOptions
   ) {
-    formData[input.name].isValid = validationFns.isInputValid(
+    const { isValid, errors } = validationFns.isInputValid(
       formData[input.name].value,
       inputOptions?.validators
     );
+    formData[input.name].isValid = isValid;
+    formData[input.name].errors = errors;
     input.setAttribute(
       DataAttributes.error,
       String(!formData[input.name].isValid)
@@ -29,8 +33,35 @@ export const validationFns = {
   /**
    * Runs all provided validators against the specified value.
    */
-  isInputValid(value: unknown, validators?: ValidationFn[]): boolean {
-    return !validators ? true : validators.every((fn) => fn(value));
+  isInputValid(
+    value: unknown,
+    validators?: ValidationFn[]
+  ): InputValidationState {
+    return !validators
+      ? { isValid: true, errors: [] }
+      : validationFns.mapValidatorsToInputValidationState(value, validators);
+  },
+
+  mapValidatorsToInputValidationState(
+    value: unknown,
+    validators: ValidationFn[]
+  ): InputValidationState {
+    return validators.reduce<InputValidationState>(
+      (acc, cur) => {
+        const isValid = cur(value);
+        const errors = [...acc.errors];
+
+        if (isString(isValid)) {
+          errors.push(isValid);
+        }
+
+        return {
+          isValid: !acc.isValid || !isValid || isString(isValid) ? false : true,
+          errors,
+        };
+      },
+      { isValid: true, errors: [] }
+    );
   },
 
   required: (value: string | number | boolean) => !!value,

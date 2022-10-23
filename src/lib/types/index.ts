@@ -1,6 +1,9 @@
-export type ValidationFn = (value: any) => boolean;
+export type ValidationFn = (value: any) => boolean | string;
 export type FormulaValidations = Record<string, FormulaValidationsOptions>;
-
+export interface InputValidationState {
+  isValid: boolean;
+  errors: string[];
+}
 export interface FormulaValidationsOptions {
   validators?: ValidationFn[];
   validateOn?: "input" | "change";
@@ -22,13 +25,20 @@ export type FormFields =
   | HTMLTextAreaElement;
 
 export interface FormulaForm {
-  [fieldName: string]: {
-    value: unknown;
-    isValid: boolean;
-    isTouched: boolean;
-    isFocused: boolean;
-    isDirty: boolean;
-  };
+  [fieldName: string]: FormulaFormData;
+}
+
+export interface FormulaFormPartial {
+  [fieldName: string]: Partial<FormulaFormData>;
+}
+
+export interface FormulaFormData {
+  value: unknown;
+  isValid: boolean;
+  isTouched: boolean;
+  isFocused: boolean;
+  isDirty: boolean;
+  errors: string[];
 }
 
 export enum Events {
