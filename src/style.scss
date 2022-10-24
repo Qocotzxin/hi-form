@@ -5,7 +5,8 @@
   font-family: "Roboto", sans-serif;
 }
 
-input {
+input[type="text"],
+input[type="number"] {
   border-radius: 4px;
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -41,6 +42,7 @@ form > div {
   display: flex;
   flex-direction: column;
   width: 300px;
+  padding: 16px;
   align-items: center;
 
   & > * {
@@ -80,4 +82,19 @@ button[type="submit"] {
   cursor: pointer;
   font-size: 14px;
   padding: 4px 8px;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  input {
+    margin-left: 8px;
+  }
+
+  input,
+  label {
+    cursor: pointer;
+  }
 }

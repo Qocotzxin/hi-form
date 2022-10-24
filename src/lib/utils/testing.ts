@@ -1,5 +1,10 @@
 import { expect } from "vitest";
-import { FormFields, FormulaForm, FormulaFormPartial } from "../types";
+import {
+  FormFields,
+  FormulaForm,
+  FormulaFormPartial,
+  InputTypes,
+} from "../types";
 
 export function generateForm(): {
   form: HTMLFormElement;
@@ -16,6 +21,17 @@ export function generateForm(): {
   return { form, fields: [input, textarea] };
 }
 
+export function generateStandaloneInput(
+  attributes: { attr: string; value: string }[]
+) {
+  const input = document.createElement("input");
+  attributes.forEach((record) => {
+    input.setAttribute(record.attr, record.value);
+  });
+
+  return input;
+}
+
 export const expectOfTypeFunction = expect.any(Function);
 
 export const generateFormData: (
@@ -24,18 +40,20 @@ export const generateFormData: (
   email: {
     isFocused: false,
     value: "",
-    isValid: false,
+    isValid: true,
     isTouched: false,
     isDirty: false,
     errors: [],
+    _inputType: InputTypes.text,
   },
   comments: {
     isFocused: false,
     value: "",
-    isValid: false,
+    isValid: true,
     isTouched: false,
     isDirty: false,
     errors: [],
+    _inputType: null,
   },
   ...override,
 });

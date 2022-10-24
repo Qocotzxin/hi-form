@@ -45,6 +45,8 @@ describe("Formula main function.", () => {
         isValid: true,
         isTouched: false,
         isDirty: false,
+        errors: [],
+        _inputType: "text",
       },
       comments: {
         isFocused: false,
@@ -52,6 +54,8 @@ describe("Formula main function.", () => {
         isValid: true,
         isTouched: false,
         isDirty: false,
+        errors: [],
+        _inputType: null,
       },
     });
   });

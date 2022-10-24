@@ -30,6 +30,7 @@ Then, data manipulation will happen purely in Javascript through a minimal API. 
 Then is just a matter of subscribing to the changes by calling `subscribe`:
 
 ```
+// Currently it only works locally so it should be imported from "./lib"
 import { formula } from 'formula';
 
 const form = formula(document.querySelector<HTMLFormElement>("form")!);
@@ -87,11 +88,9 @@ input[data-formula-error="true"] {
 
 ## Upcoming features/fixes
 
+- Make it work for selects.
 - Global configuration (applies for every field).
 - Option to choose which events should be emitted.
+- Option to emit the whole formData for other events other than submit instead of only formData for the field that emitted the event.
 - Predefined validators.
-- Testing interaction with selects, radio inputs and checkboxes (currently input and textarea inputs are the only ones fully working).
-
-```
-
-```
+- Access formData

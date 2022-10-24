@@ -33,13 +33,16 @@ export interface FormulaFormPartial {
 }
 
 export interface FormulaFormData {
-  value: unknown;
+  value: InputValue;
   isValid: boolean;
   isTouched: boolean;
   isFocused: boolean;
   isDirty: boolean;
   errors: string[];
+  _inputType: InputTypes | null;
 }
+
+export type InputValue = string | number | boolean;
 
 export enum Events {
   change = "change",
@@ -53,6 +56,31 @@ export enum FormElements {
   input = "input",
   textarea = "textarea",
   select = "select",
+}
+
+export enum InputTypes {
+  radio = "radio",
+  checkbox = "checkbox",
+  button = "button",
+  color = "color",
+  date = "date",
+  datetimeLocal = "datetime-local",
+  email = "email",
+  file = "file",
+  hidden = "hidden",
+  image = "image",
+  month = "month",
+  number = "number",
+  password = "password",
+  range = "range",
+  reset = "reset",
+  search = "search",
+  submit = "submit",
+  tel = "tel",
+  text = "text",
+  time = "time",
+  url = "url",
+  week = "week",
 }
 
 export enum FormSubmitElements {

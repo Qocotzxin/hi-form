@@ -1,4 +1,4 @@
-import { createFormData } from "./data";
+import { formDataFns } from "./data";
 import { getInputsAsArray } from "./dom";
 import { eventHandlingFns } from "./event-handling";
 import { subject } from "./subscription";
@@ -14,7 +14,7 @@ export const formula = (
 
   // Add warning if there are no inputs.
   const inputs = getInputsAsArray(form);
-  const formData = createFormData(inputs);
+  const formData = formDataFns.createFormData(inputs);
   const callbacks = eventHandlingFns.subscribeToInputChanges(
     inputs,
     formData,

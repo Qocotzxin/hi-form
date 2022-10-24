@@ -8,6 +8,7 @@ import {
   FormulaValidationsOptions,
   UserEvent,
 } from "./types";
+import { isCheckbox } from "./utils/type-helpers";
 import { validationFns } from "./validation";
 
 export const eventHandlingFns = {
@@ -128,7 +129,10 @@ export const eventHandlingFns = {
     inputOptions?: FormulaValidationsOptions
   ) => {
     return (e: Event) => {
-      formData[input.name].value = (e.target as FormFields).value;
+      const target = e.target as FormFields;
+      formData[input.name].value = isCheckbox(input)
+        ? !!(target as HTMLInputElement).checked
+        : target.value;
       validationFns.applyFieldValidation(input, formData, inputOptions);
 
       if (!formData[input.name].isDirty) {
@@ -152,7 +156,6 @@ export const eventHandlingFns = {
       let isValid = true;
 
       for (const input of inputs) {
-        formData[input.name].value = input.value;
         validationFns.applyFieldValidation(
           input,
           formData,

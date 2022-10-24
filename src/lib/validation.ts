@@ -4,6 +4,7 @@ import {
   FormulaForm,
   FormulaValidationsOptions,
   InputValidationState,
+  InputValue,
   ValidationFn,
 } from "./types";
 import { isString } from "./utils/type-helpers";
@@ -64,5 +65,5 @@ export const validationFns = {
     );
   },
 
-  required: (value: string | number | boolean) => !!value,
+  required: (value: InputValue) => !!value,
 };
