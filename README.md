@@ -88,9 +88,9 @@ input[data-formula-error="true"] {
 
 ## Upcoming features/fixes
 
-- Make it work for selects.
 - Global configuration (applies for every field).
 - Option to choose which events should be emitted.
 - Option to emit the whole formData for other events other than submit instead of only formData for the field that emitted the event.
 - Predefined validators.
-- Access formData
+- Access formData through a function.
+- Access form validity state through a function.

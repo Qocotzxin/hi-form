@@ -5,8 +5,13 @@
   font-family: "Roboto", sans-serif;
 }
 
+select {
+  cursor: pointer;
+}
+
 input[type="text"],
-input[type="number"] {
+input[type="number"],
+select {
   border-radius: 4px;
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.16);
