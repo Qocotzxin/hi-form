@@ -214,9 +214,29 @@ describe("Event handling functions.", () => {
       expect(formData.email.isFocused).toBe(true);
     });
 
-    it("Should return a function that, when executed, emits an event using the behavior subject.", () => {
+    it("Should return a function that, when executed, emits an event using the behavior subject if emitOn option is not passed.", () => {
       const formData = generateFormData();
       const focusEvent = eventHandlingFns.onFocus(fields[0], formData);
+      focusEvent({} as Event);
+
+      expect(emit).toHaveBeenCalledWith("focus", formData.email);
+    });
+
+    it("Should return a function that, when executed, should NOT call emit if emitOn options is defined but focus is not in the array.", () => {
+      const formData = generateFormData();
+      const focusEvent = eventHandlingFns.onFocus(fields[0], formData, {
+        emitOn: [],
+      });
+      focusEvent({} as Event);
+
+      expect(emit).not.toHaveBeenCalled();
+    });
+
+    it("Should return a function that, when executed, should call emit if emitOn options is defined and focus is in the array.", () => {
+      const formData = generateFormData();
+      const focusEvent = eventHandlingFns.onFocus(fields[0], formData, {
+        emitOn: ["focus"],
+      });
       focusEvent({} as Event);
 
       expect(emit).toHaveBeenCalledWith("focus", formData.email);
@@ -252,10 +272,30 @@ describe("Event handling functions.", () => {
       expect(applyFieldValidationSpy).toHaveBeenCalled();
     });
 
-    it("Should return a function that, when executed, emits an event using the behavior subject.", () => {
+    it("Should return a function that, when executed, emits an event using the behavior subject if emitOn is not passed.", () => {
       const formData = generateFormData();
 
       const blurEvent = eventHandlingFns.onBlur(fields[0], formData);
+      blurEvent({} as Event);
+
+      expect(emit).toHaveBeenCalledWith("blur", formData.email);
+    });
+
+    it("Should return a function that, when executed, should NOT call emit if emitOn options is defined but blur is not in the array.", () => {
+      const formData = generateFormData();
+      const blurEvent = eventHandlingFns.onBlur(fields[0], formData, {
+        emitOn: [],
+      });
+      blurEvent({} as Event);
+
+      expect(emit).not.toHaveBeenCalled();
+    });
+
+    it("Should return a function that, when executed, should call emit if emitOn options is defined and blur is in the array.", () => {
+      const formData = generateFormData();
+      const blurEvent = eventHandlingFns.onBlur(fields[0], formData, {
+        emitOn: ["blur"],
+      });
       blurEvent({} as Event);
 
       expect(emit).toHaveBeenCalledWith("blur", formData.email);
@@ -304,6 +344,39 @@ describe("Event handling functions.", () => {
         validateOn: "input",
       });
       changeEvent({ target: { value: mockEmail } } as unknown as Event);
+
+      expect(emit).toHaveBeenCalledWith("input", formData.email);
+    });
+
+    it("Should return a function that, when executed, should NOT call emit if emitOn options is defined but 'change' is not in the array.", () => {
+      const formData = generateFormData();
+      const changeEvent = eventHandlingFns.onChange(fields[0], formData, {
+        emitOn: [],
+      });
+      changeEvent({ target: { value: "" } } as unknown as Event);
+
+      expect(emit).not.toHaveBeenCalled();
+    });
+
+    it("Should return a function that, when executed, should call emit if emitOn options is defined and 'change' is in the array.", () => {
+      const formData = generateFormData();
+      const changeEvent = eventHandlingFns.onChange(fields[0], formData, {
+        emitOn: ["change"],
+      });
+
+      changeEvent({ target: { value: "" } } as unknown as Event);
+
+      expect(emit).toHaveBeenCalledWith("change", formData.email);
+    });
+
+    it("Should return a function that, when executed, should call emit if emitOn options is defined and 'input' is in the array.", () => {
+      const formData = generateFormData();
+      const changeEvent = eventHandlingFns.onChange(fields[0], formData, {
+        validateOn: "input",
+        emitOn: ["input"],
+      });
+
+      changeEvent({ target: { value: "" } } as unknown as Event);
 
       expect(emit).toHaveBeenCalledWith("input", formData.email);
     });

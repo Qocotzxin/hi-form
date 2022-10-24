@@ -1,13 +1,15 @@
 export type ValidationFn = (value: any) => boolean | string;
-export type FormulaValidations = Record<string, FormulaValidationsOptions>;
+export type FormulaValidations = Record<string, FormulaFieldOptions>;
 export interface InputValidationState {
   isValid: boolean;
   errors: string[];
 }
-export interface FormulaValidationsOptions {
+export interface FormulaFieldOptions {
   validators?: ValidationFn[];
   validateOn?: "input" | "change";
   validateDirtyOnly?: boolean;
+  // Not using Events type here to provide a better DX.
+  emitOn?: Array<"change" | "input" | "focus" | "blur">;
 }
 
 export type ChangeCallbacks = Record<

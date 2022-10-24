@@ -5,7 +5,7 @@ import {
   FormFields,
   FormulaForm,
   FormulaValidations,
-  FormulaValidationsOptions,
+  FormulaFieldOptions,
   UserEvent,
 } from "./types";
 import { isCheckbox } from "./utils/type-helpers";
@@ -29,7 +29,7 @@ export const eventHandlingFns = {
       fns[input.name] = {
         // 'Change' is kept as name to simplify internal logic since this is not exposed to the user.
         [Events.change]: onChange(input, formData, inputOptions),
-        [Events.focus]: onFocus(input, formData),
+        [Events.focus]: onFocus(input, formData, inputOptions),
         [Events.blur]: onBlur(input, formData, inputOptions),
       };
 
@@ -89,10 +89,17 @@ export const eventHandlingFns = {
    * Callback to be executed on focus event.
    * Does not execute validation.
    */
-  onFocus: (input: FormFields, formData: FormulaForm) => {
+  onFocus: (
+    input: FormFields,
+    formData: FormulaForm,
+    inputOptions?: FormulaFieldOptions
+  ) => {
     return (_: Event) => {
       formData[input.name].isFocused = true;
-      emit(Events.focus, formData[input.name]);
+
+      if (!inputOptions?.emitOn || inputOptions.emitOn.includes(Events.focus)) {
+        emit(Events.focus, formData[input.name]);
+      }
     };
   },
 
@@ -103,7 +110,7 @@ export const eventHandlingFns = {
   onBlur: (
     input: FormFields,
     formData: FormulaForm,
-    inputOptions?: FormulaValidationsOptions
+    inputOptions?: FormulaFieldOptions
   ) => {
     return (_: Event) => {
       formData[input.name].isFocused = false;
@@ -115,7 +122,10 @@ export const eventHandlingFns = {
           validationFns.applyFieldValidation(input, formData, inputOptions);
         }
       }
-      emit(Events.blur, formData[input.name]);
+
+      if (!inputOptions?.emitOn || inputOptions?.emitOn.includes(Events.blur)) {
+        emit(Events.blur, formData[input.name]);
+      }
     };
   },
 
@@ -126,9 +136,10 @@ export const eventHandlingFns = {
   onChange: (
     input: FormFields,
     formData: FormulaForm,
-    inputOptions?: FormulaValidationsOptions
+    inputOptions?: FormulaFieldOptions
   ) => {
     return (e: Event) => {
+      const selectedEvent = inputOptions?.validateOn || Events.change;
       const target = e.target as FormFields;
       formData[input.name].value = isCheckbox(input)
         ? !!(target as HTMLInputElement).checked
@@ -138,7 +149,13 @@ export const eventHandlingFns = {
       if (!formData[input.name].isDirty) {
         formData[input.name].isDirty = true;
       }
-      emit(inputOptions?.validateOn || Events.change, formData[input.name]);
+
+      if (
+        !inputOptions?.emitOn ||
+        inputOptions?.emitOn.includes(selectedEvent)
+      ) {
+        emit(selectedEvent, formData[input.name]);
+      }
     };
   },
 

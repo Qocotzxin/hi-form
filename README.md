@@ -59,11 +59,12 @@ const form = formula(document.querySelector<HTMLFormElement>("form")!, {
 form.subscribe(console.log);
 ```
 
-In this case we pass a second argument that is an object where each key is an input `name` (the value you provided for name attribute) and the value is an object with multiple options that will apply for the specified field:
+In this case we pass a second argument that is an object where each key is an input `name` (the value you provided for name attribute) and the value is an object with multiple options that will apply for the specified field. Every configuration key is optional:
 
-- `validators` - an array of functions which should return a boolean or a string (`(value: any) => boolean | string`). The string returned by this function is usually an error message associated to the validation that failed.
-- `validateOn` - formula runs validations on different events, on of those is the `change` event. But the change event can be replaced by `input` event if you want to run validations each time the user types something in. Due to performance, `change` is recommended and is the default behavior, but `input` can be useful in several cases.
-- `validateDirtyOnly` - by default formula won't run validations on `blur` if the input value never changed (which means the user never typed any value). This behavior can be changed by setting `validateDirtyOnly` to `false` in which case, validations will be executed when the user focus the input and then leaves (e.g.: when moving through the inputs using `tab`).
+- `validators?: ValidationFn[]` - an array of functions which should return a boolean or a string (`(value: any) => boolean | string`). The string returned by this function is usually an error message associated to the validation that failed.
+- `validateOn?: "input" | "change";` - formula runs validations on different events, on of those is the `change` event. But the change event can be replaced by `input` event if you want to run validations each time the user types something in. Due to performance, `change` is recommended and is the default behavior, but `input` can be useful in several cases.
+- `validateDirtyOnly?: boolean` - by default formula won't run validations on `blur` if the input value never changed (which means the user never typed any value). This behavior can be changed by setting `validateDirtyOnly` to `false` in which case, validations will be executed when the user focus the input and then leaves (e.g.: when moving through the inputs using `tab`).
+- `emitOn?: Array<"change" | "input" | "focus" | "blur">` - an array of events to choose which ones will be emitted. If no array is passed then al events are emitted but if an empty array is passed, only submit event will be emitted (submit event is not optional).
 
 ### Subscribing
 
@@ -89,7 +90,6 @@ input[data-formula-error="true"] {
 ## Upcoming features/fixes
 
 - Global configuration (applies for every field).
-- Option to choose which events should be emitted.
 - Option to emit the whole formData for other events other than submit instead of only formData for the field that emitted the event.
 - Predefined validators.
 - Access formData through a function.

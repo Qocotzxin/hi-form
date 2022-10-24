@@ -9,9 +9,15 @@ const form = formula(document.querySelector<HTMLFormElement>("form")!, {
         value.length >= 5 || "Min length should be at least 5 characters.",
     ],
     validateDirtyOnly: false,
+    emitOn: ["change"],
   },
-  lastName: { validators: [(value: string) => !!value.length] },
-  age: { validators: [(value: number) => value > 18] },
+  lastName: {
+    validators: [(value: string) => !!value.length],
+    emitOn: ["change"],
+  },
+  age: {
+    validators: [(value: number) => value > 18],
+  },
 });
 
 form.subscribe(console.log);

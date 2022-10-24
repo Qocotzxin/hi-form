@@ -2,7 +2,7 @@ import {
   DataAttributes,
   FormFields,
   FormulaForm,
-  FormulaValidationsOptions,
+  FormulaFieldOptions,
   InputValidationState,
   InputValue,
   ValidationFn,
@@ -17,7 +17,7 @@ export const validationFns = {
   applyFieldValidation(
     input: FormFields,
     formData: FormulaForm,
-    inputOptions?: FormulaValidationsOptions
+    inputOptions?: FormulaFieldOptions
   ) {
     const { isValid, errors } = validationFns.isInputValid(
       formData[input.name].value,
