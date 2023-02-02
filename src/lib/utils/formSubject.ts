@@ -1,8 +1,8 @@
 import { Subject } from "rxjs";
-import { FormulaValue } from "../types";
+import { HiFormValue } from "../types";
 
 class FormSubject {
-  private subject: Subject<FormulaValue<any>> = new Subject();
+  private subject: Subject<HiFormValue<any>> = new Subject();
 
   getSubject() {
     if (this.subject.closed) {

@@ -1,5 +1,5 @@
 import { expect } from "vitest";
-import { FormFields, FormulaForm, InputTypes } from "../types";
+import { FormFields, HiFormForm, InputTypes } from "../types";
 
 export function generateForm(): {
   form: HTMLFormElement;
@@ -32,8 +32,8 @@ export const expectOfTypeFunction = expect.any(Function);
 type FormDataKeys = "email" | "comments";
 
 export const generateFormData: (
-  override?: Partial<FormulaForm<FormDataKeys>>
-) => FormulaForm<FormDataKeys> = (override) => ({
+  override?: Partial<HiFormForm<FormDataKeys>>
+) => HiFormForm<FormDataKeys> = (override) => ({
   email: {
     isFocused: false,
     value: "",

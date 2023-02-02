@@ -1,28 +1,28 @@
 import { describe, expect, it, vi } from "vitest";
-import { formula } from "../formula";
-import formulaSubject from "../utils/formSubject";
+import { hiForm } from "../hi-form";
+import hiFormSubject from "../utils/formSubject";
 import { expectOfTypeFunction, generateForm } from "../utils/testing";
 import { eventHandlingFns } from "../event-handling";
 
 const { form } = generateForm();
 
-describe("Formula main function.", () => {
+describe("HiForm main function.", () => {
   it("Should throw an error when no form element is provided.", () => {
     // @ts-ignore: ignore to test error when no form is provided.
-    const formulaFn = () => formula({});
+    const hiFormFn = () => hiForm({});
 
-    expect(formulaFn).toThrowError("Please provide a valid <form> element.");
+    expect(hiFormFn).toThrowError("Please provide a valid <form> element.");
   });
 
   it("Should return an object with value, subscribe and unsubscribe.", () => {
-    expect(formula({ form })).toEqual({
+    expect(hiForm({ form })).toEqual({
       value: expectOfTypeFunction,
       subscribe: expectOfTypeFunction,
       unsubscribe: expectOfTypeFunction,
     });
   });
 
-  it("Should call subscribeToInputChanges and subscribeToSubmitEvent when calling formula.", () => {
+  it("Should call subscribeToInputChanges and subscribeToSubmitEvent when calling hiForm.", () => {
     const subscribeToInputChangesSpy = vi.spyOn(
       eventHandlingFns,
       "subscribeToInputChanges"
@@ -31,13 +31,13 @@ describe("Formula main function.", () => {
       eventHandlingFns,
       "subscribeToSubmitEvent"
     );
-    formula({ form });
+    hiForm({ form });
     expect(subscribeToInputChangesSpy).toHaveBeenCalledTimes(1);
     expect(subscribeToSubmitEventSpy).toHaveBeenCalledTimes(1);
   });
 
-  it("Should return formData when value function returned by formula is called.", () => {
-    expect(formula({ form }).value()).toEqual({
+  it("Should return formData when value function returned by hiForm is called.", () => {
+    expect(hiForm({ form }).value()).toEqual({
       email: {
         isFocused: false,
         value: "",
@@ -59,17 +59,17 @@ describe("Formula main function.", () => {
     });
   });
 
-  it("Should call subject.subscribe when subscribe function returned by formula is called.", () => {
-    const subjectSpy = vi.spyOn(formulaSubject.getSubject(), "subscribe");
+  it("Should call subject.subscribe when subscribe function returned by hiForm is called.", () => {
+    const subjectSpy = vi.spyOn(hiFormSubject.getSubject(), "subscribe");
     const callback = vi.fn();
-    formula({ form }).subscribe(callback);
+    hiForm({ form }).subscribe(callback);
     expect(subjectSpy).toHaveBeenCalledTimes(1);
     expect(subjectSpy).toHaveBeenCalledWith(callback);
   });
 
-  it("Should call subject.unsubscribe when unsubscribe function returned by formula is called.", () => {
-    const subjectSpy = vi.spyOn(formulaSubject.getSubject(), "unsubscribe");
-    formula({ form }).unsubscribe();
+  it("Should call subject.unsubscribe when unsubscribe function returned by hiForm is called.", () => {
+    const subjectSpy = vi.spyOn(hiFormSubject.getSubject(), "unsubscribe");
+    hiForm({ form }).unsubscribe();
     expect(subjectSpy).toHaveBeenCalledTimes(1);
   });
 });

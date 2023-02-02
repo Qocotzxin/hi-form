@@ -2,9 +2,9 @@ import { emit } from "./subscription";
 import {
   ChangeCallbacks,
   FormFields,
-  FormulaForm,
-  FormulaValidations,
-  FormulaFieldOptions,
+  HiFormForm,
+  HiFormValidations,
+  HiFormFieldOptions,
   UserEvent,
 } from "./types";
 import { isCheckbox } from "./utils/type-helpers";
@@ -16,9 +16,9 @@ export const eventHandlingFns = {
    */
   subscribeToInputChanges: <T extends string>(
     inputs: FormFields[],
-    formData: FormulaForm<T>,
-    options: Partial<FormulaValidations<T>> = {},
-    globalOptions?: FormulaFieldOptions
+    formData: HiFormForm<T>,
+    options: Partial<HiFormValidations<T>> = {},
+    globalOptions?: HiFormFieldOptions
   ): ChangeCallbacks => {
     const fns: ChangeCallbacks = {};
     const { onChange, onBlur, onFocus } = eventHandlingFns;
@@ -53,8 +53,8 @@ export const eventHandlingFns = {
   unsubscribeFromInputChanges: <T extends string>(
     inputs: FormFields[],
     fns: ChangeCallbacks,
-    options: Partial<FormulaValidations<T>> = {},
-    globalOptions?: FormulaFieldOptions
+    options: Partial<HiFormValidations<T>> = {},
+    globalOptions?: HiFormFieldOptions
   ) => {
     for (const input of inputs) {
       const inputOptions = {
@@ -75,7 +75,7 @@ export const eventHandlingFns = {
    */
   subscribeToSubmitEvent: <T extends string>(
     form: HTMLFormElement,
-    formData: FormulaForm<T>
+    formData: HiFormForm<T>
   ): UserEvent => {
     const { onSubmit } = eventHandlingFns;
     const onSubmitCallback = onSubmit(formData);
@@ -96,8 +96,8 @@ export const eventHandlingFns = {
    */
   onFocus: <T extends string>(
     input: FormFields,
-    formData: FormulaForm<T>,
-    inputOptions?: FormulaFieldOptions
+    formData: HiFormForm<T>,
+    inputOptions?: HiFormFieldOptions
   ) => {
     return (_: Event) => {
       formData[input.name as T].isFocused = true;
@@ -118,8 +118,8 @@ export const eventHandlingFns = {
    */
   onBlur: <T extends string>(
     input: FormFields,
-    formData: FormulaForm<T>,
-    inputOptions?: FormulaFieldOptions
+    formData: HiFormForm<T>,
+    inputOptions?: HiFormFieldOptions
   ) => {
     return (_: Event) => {
       formData[input.name as T].isFocused = false;
@@ -148,8 +148,8 @@ export const eventHandlingFns = {
    */
   onChange: <T extends string>(
     input: FormFields,
-    formData: FormulaForm<T>,
-    inputOptions?: FormulaFieldOptions
+    formData: HiFormForm<T>,
+    inputOptions?: HiFormFieldOptions
   ) => {
     return (e: Event) => {
       const selectedEvent = inputOptions?.validateOn || "change";
@@ -180,7 +180,7 @@ export const eventHandlingFns = {
    * Callback to be executed on submit event.
    * Always executes validation.
    */
-  onSubmit: <T extends string>(formData: FormulaForm<T>) => {
+  onSubmit: <T extends string>(formData: HiFormForm<T>) => {
     return (e: Event) => {
       e.preventDefault();
 

@@ -11,7 +11,7 @@ const { fields } = generateForm();
 
 describe("Data functions.", () => {
   describe("createFormData", () => {
-    it("Should return an object of type FormulaForm per input/textarea/select.", () => {
+    it("Should return an object of type HiFormForm per input/textarea/select.", () => {
       expect(formDataFns.createFormData(fields)).toEqual(generateFormData());
     });
 

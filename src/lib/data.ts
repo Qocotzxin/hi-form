@@ -1,12 +1,12 @@
-import { FormFields, FormulaForm, InputTypes, InputValue } from "./types";
+import { FormFields, HiFormForm, InputTypes, InputValue } from "./types";
 import { isCheckbox, isRadio } from "./utils/type-helpers";
 
 export const formDataFns = {
   /**
-   * Returns the main formula object based on each input value and name.
+   * Returns the main hiForm object based on each input value and name.
    */
-  createFormData<T extends string>(inputs: FormFields[]): FormulaForm<T> {
-    return inputs.reduce<FormulaForm<any>>((acc, cur) => {
+  createFormData<T extends string>(inputs: FormFields[]): HiFormForm<T> {
+    return inputs.reduce<HiFormForm<any>>((acc, cur) => {
       return {
         ...acc,
         [cur.name]: {

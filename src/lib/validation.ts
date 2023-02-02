@@ -1,9 +1,9 @@
 import {
   FormFields,
-  FormulaCustomValidators,
-  FormulaFieldOptions,
-  FormulaForm,
-  FormulaFormData,
+  HiFormCustomValidators,
+  HiFormFieldOptions,
+  HiFormForm,
+  HiFormFormData,
   InputValidationState,
   InputValue,
   ValidationFn,
@@ -17,8 +17,8 @@ export const validationFns = {
    */
   applyFieldValidation<T extends string>(
     input: FormFields,
-    formData: FormulaForm<T>,
-    inputOptions?: FormulaFieldOptions
+    formData: HiFormForm<T>,
+    inputOptions?: HiFormFieldOptions
   ) {
     const { isValid, errors } = validationFns.isInputValid(
       input.name,
@@ -54,8 +54,8 @@ export const validationFns = {
   /**
    * Checks if all fields are valid using the formData state.
    */
-  isFormValid: <T extends string>(formData: FormulaForm<T>): boolean => {
-    return Object.values<FormulaFormData>(formData).every(
+  isFormValid: <T extends string>(formData: HiFormForm<T>): boolean => {
+    return Object.values<HiFormFormData>(formData).every(
       (data) => data.isValid
     );
   },
@@ -92,7 +92,7 @@ export const validationFns = {
 const emailRegex =
   /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
-export const FormulaValidators: FormulaCustomValidators = {
+export const HiFormValidators: HiFormCustomValidators = {
   required: (errorMessage?: string) => (value: string, inputName: string) =>
     !!value || errorMessage || `${inputName} field is required.`,
   minLength:

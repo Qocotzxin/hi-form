@@ -1,2 +1,2 @@
-export * from "./formula";
-export { FormulaValidators } from "./validation";
+export * from "./hi-form";
+export { HiFormValidators } from "./validation";

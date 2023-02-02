@@ -1,27 +1,24 @@
 export type ValidationFn = (value: any, inputName: string) => boolean | string;
-export type FormulaValidations<T extends string> = Record<
-  T,
-  FormulaFieldOptions
->;
+export type HiFormValidations<T extends string> = Record<T, HiFormFieldOptions>;
 type LengthValidation = (minMax: number, errorMessage?: string) => ValidationFn;
 
-export interface FormulaCustomValidators {
+export interface HiFormCustomValidators {
   required: (errorMessage?: string) => ValidationFn;
   email: (errorMessage?: string) => ValidationFn;
   minLength: LengthValidation;
   maxLength: LengthValidation;
   pattern: (pattern: string | RegExp, errorMessage?: string) => ValidationFn;
 }
-export interface FormulaParams<T extends string> {
+export interface HiFormParams<T extends string> {
   form: HTMLFormElement;
-  globalOptions?: FormulaFieldOptions;
-  fieldOptions?: Partial<FormulaValidations<T>>;
+  globalOptions?: HiFormFieldOptions;
+  fieldOptions?: Partial<HiFormValidations<T>>;
 }
 export interface InputValidationState {
   isValid: boolean;
   errors: string[];
 }
-export interface FormulaFieldOptions {
+export interface HiFormFieldOptions {
   /**
    * An array of functions with the following signature:
    * (value: any) => string | boolean
@@ -31,7 +28,7 @@ export interface FormulaFieldOptions {
   validators?: ValidationFn[];
 
   /**
-   * Formula runs validations on different events, one of those is the `change` event.
+   * HiForm runs validations on different events, one of those is the `change` event.
    * But it can be replaced with the `input` event if you want to run validations
    * each time the user types something in. Due to performance, `change` is recommended
    * and is the default behavior.
@@ -39,7 +36,7 @@ export interface FormulaFieldOptions {
   validateOn?: "input" | "change";
 
   /**
-   * By default Formula won't run validations on `blur` if
+   * By default HiForm won't run validations on `blur` if
    * the input value never changed (which means the user never typed any value).
    * This behavior can be modified by setting `validateDirtyOnly` to `false` in which case,
    * validations will be executed when the user focus the input and then leaves
@@ -69,20 +66,20 @@ export type FormFields =
   | HTMLSelectElement
   | HTMLTextAreaElement;
 
-interface FormulaFormState {
+interface HiFormFormState {
   isValid: boolean;
 }
-export type FormulaForm<T extends string> = {
-  [key in T]: FormulaFormData;
+export type HiFormForm<T extends string> = {
+  [key in T]: HiFormFormData;
 };
 
-export interface FormulaValue<T extends string> {
+export interface HiFormValue<T extends string> {
   event: Events;
-  formData: FormulaForm<T>;
-  formState: FormulaFormState;
+  formData: HiFormForm<T>;
+  formState: HiFormFormState;
 }
 
-export interface FormulaFormData {
+export interface HiFormFormData {
   value: InputValue;
   isValid: boolean;
   isTouched: boolean;

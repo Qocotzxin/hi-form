@@ -1,12 +1,12 @@
 import "./style.scss";
-import { formula, FormulaValidators } from "./lib";
+import { hiForm, HiFormValidators } from "./lib";
 
-const form = formula({
+const form = hiForm({
   form: document.querySelector<HTMLFormElement>("form")!,
   fieldOptions: {
     firstName: {
       validators: [
-        FormulaValidators.required("This field is required."),
+        HiFormValidators.required("This field is required."),
         (value: string) =>
           value.length >= 5 || "Min length should be at least 5 characters.",
       ],

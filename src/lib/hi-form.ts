@@ -1,14 +1,14 @@
 import { formDataFns } from "./data";
 import { getInputsAsArray } from "./dom";
 import { eventHandlingFns } from "./event-handling";
-import { FormulaParams, FormulaValue } from "./types";
+import { HiFormParams, HiFormValue } from "./types";
 import formSubject from "./utils/formSubject";
 
-export const formula = <T extends string>({
+export const hiForm = <T extends string>({
   form,
   fieldOptions,
   globalOptions,
-}: FormulaParams<T>) => {
+}: HiFormParams<T>) => {
   if (!form) {
     throw new Error("Please provide a valid <form> element.");
   }
@@ -29,7 +29,7 @@ export const formula = <T extends string>({
 
   return {
     value: () => formData,
-    subscribe: (fn: (data: FormulaValue<T>) => void) => subject.subscribe(fn),
+    subscribe: (fn: (data: HiFormValue<T>) => void) => subject.subscribe(fn),
     unsubscribe: () => {
       eventHandlingFns.unsubscribeFromInputChanges(
         inputs,

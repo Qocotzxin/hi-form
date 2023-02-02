@@ -5,8 +5,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, "src/lib/index.ts"),
-      name: "MyLib",
-      fileName: "formula",
+      name: "HiForm",
+      fileName: "hi-form",
     },
   },
   server: {

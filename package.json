@@ -1,17 +1,17 @@
 {
-  "name": "formula",
+  "name": "hi-form",
   "private": true,
   "version": "0.1.0",
   "type": "module",
   "files": [
     "dist"
   ],
-  "main": "./dist/formula.umd.cjs",
-  "module": "./dist/formula.js",
+  "main": "./dist/hi-form.umd.cjs",
+  "module": "./dist/hi-form.js",
   "exports": {
     ".": {
-      "import": "./dist/formula.js",
-      "require": "./dist/formula.umd.cjs"
+      "import": "./dist/hi-form.js",
+      "require": "./dist/hi-form.umd.cjs"
     }
   },
   "scripts": {
