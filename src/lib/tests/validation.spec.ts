@@ -23,7 +23,7 @@ describe("Validation functions.", () => {
 
       validationFns.applyFieldValidation(fields[0], formData);
 
-      expect(isInputValidSpy).toHaveBeenCalledWith("", undefined);
+      expect(isInputValidSpy).toHaveBeenCalledWith("email", "", undefined);
     });
 
     it("Should call isInputValid and pass the validators when set.", () => {
@@ -44,7 +44,7 @@ describe("Validation functions.", () => {
         validators: [(e: string) => !!e],
       });
 
-      expect(isInputValidSpy).toHaveBeenCalledWith("test", [
+      expect(isInputValidSpy).toHaveBeenCalledWith("email", "test", [
         expect.any(Function),
       ]);
     });
@@ -86,7 +86,7 @@ describe("Validation functions.", () => {
     });
 
     it("Should return false if at least one of the validations provided fails.", () => {
-      const isValid = validationFns.isInputValid("test", [
+      const isValid = validationFns.isInputValid("email", "test", [
         (v: string) => v.length > 1 || "Should have more than 1 char",
         (v: string) => v.length < 4 || "Should have less than 4 chars",
       ]);
@@ -110,123 +110,131 @@ describe("Validation functions.", () => {
 
   describe("Custom validators", () => {
     describe("required", () => {
-      it("Should return false if value is an empty string and no error message is provided.", () => {
+      it("Should return the default error message if value is an empty string and no error message is provided.", () => {
         const required = FormulaValidators.required();
-        expect(required("")).toBe(false);
+        expect(required("", "email")).toBe("email field is required.");
       });
 
       it("Should return the error message when one is passed and the value is an empty string.", () => {
         const required = FormulaValidators.required("Error");
-        expect(required("")).toBe("Error");
+        expect(required("", "email")).toBe("Error");
       });
 
       it("Should return true when there is a value and no error message is passed.", () => {
         const required = FormulaValidators.required();
-        expect(required("test")).toBe(true);
+        expect(required("test", "email")).toBe(true);
       });
 
       it("Should return true when there is a value, even if an error message is passed.", () => {
         const required = FormulaValidators.required("Error");
-        expect(required("test")).toBe(true);
+        expect(required("test", "email")).toBe(true);
       });
     });
 
     describe("minLength", () => {
-      it("Should return false if value has less characters than specified and no error message is provided.", () => {
+      it("Should return the default error message if value has less characters than specified and no error message is provided.", () => {
         const minLength = FormulaValidators.minLength(2);
-        expect(minLength("a")).toBe(false);
+        expect(minLength("a", "email")).toBe(
+          "email field needs to contain at least 2 characters."
+        );
       });
 
       it("Should return the error message when one is passed and the value has less characters than specified.", () => {
         const minLength = FormulaValidators.minLength(2, "Error");
-        expect(minLength("a")).toBe("Error");
+        expect(minLength("a", "email")).toBe("Error");
       });
 
       it("Should return true when the value has at least the amount of characters specified and no error message is passed.", () => {
         const minLength = FormulaValidators.minLength(2);
-        expect(minLength("ab")).toBe(true);
+        expect(minLength("ab", "email")).toBe(true);
       });
 
       it("Should return true when the value has more characters than specified and no error message is passed.", () => {
         const minLength = FormulaValidators.minLength(2);
-        expect(minLength("abc")).toBe(true);
+        expect(minLength("abc", "email")).toBe(true);
       });
 
       it("Should return true when the value has at least the amount of characters specified, even if an error message is passed.", () => {
         const minLength = FormulaValidators.minLength(2, "Error");
-        expect(minLength("ab")).toBe(true);
+        expect(minLength("ab", "email")).toBe(true);
       });
     });
 
     describe("maxLength", () => {
-      it("Should return false if value has more characters than specified and no error message is provided.", () => {
+      it("Should return the default error message if value has more characters than specified and no error message is provided.", () => {
         const maxLength = FormulaValidators.maxLength(2);
-        expect(maxLength("abc")).toBe(false);
+        expect(maxLength("abc", "email")).toBe(
+          "email field needs to contain at the most 2 characters."
+        );
       });
 
       it("Should return the error message when one is passed and the value has more characters than specified.", () => {
         const maxLength = FormulaValidators.maxLength(2, "Error");
-        expect(maxLength("abc")).toBe("Error");
+        expect(maxLength("abc", "email")).toBe("Error");
       });
 
       it("Should return true when the value has at most the amount of characters specified and no error message is passed.", () => {
         const maxLength = FormulaValidators.maxLength(2);
-        expect(maxLength("ab")).toBe(true);
+        expect(maxLength("ab", "email")).toBe(true);
       });
 
       it("Should return true when the value has less characters than specified and no error message is passed.", () => {
         const maxLength = FormulaValidators.maxLength(2);
-        expect(maxLength("a")).toBe(true);
+        expect(maxLength("a", "email")).toBe(true);
       });
 
       it("Should return true when the value has at least the amount of characters specified, even if an error message is passed.", () => {
         const maxLength = FormulaValidators.maxLength(2, "Error");
-        expect(maxLength("ab")).toBe(true);
+        expect(maxLength("ab", "email")).toBe(true);
       });
     });
 
     describe("pattern", () => {
-      it("Should return false if value does not match the provided pattern and no error message is provided.", () => {
+      it("Should return the default error message if value does not match the provided pattern and no error message is provided.", () => {
         const pattern = FormulaValidators.pattern(/a/);
-        expect(pattern("b")).toBe(false);
+        expect(pattern("b", "email")).toBe(
+          "email field does not match the expected pattern."
+        );
       });
 
       it("Should return the error message when one is passed and the value does not match the provided pattern.", () => {
         const pattern = FormulaValidators.pattern(/a/, "Error");
-        expect(pattern("b")).toBe("Error");
+        expect(pattern("b", "email")).toBe("Error");
       });
 
       it("Should return true when the value matches the provided pattern and no error message is passed.", () => {
         const pattern = FormulaValidators.pattern(/a/);
-        expect(pattern("a")).toBe(true);
+        expect(pattern("a", "email")).toBe(true);
       });
 
       it("Should return true when there is a value, even if an error message is passed.", () => {
         const pattern = FormulaValidators.pattern(/a/, "Error");
-        expect(pattern("a")).toBe(true);
+        expect(pattern("a", "email")).toBe(true);
       });
     });
 
     describe("email", () => {
       // These tests cover only the function since the regex is the RFC 2822 standard email validation.
-      it("Should return false if value does not match the provided email and no error message is provided.", () => {
+      it("Should return the default error message if value does not match the provided email and no error message is provided.", () => {
         const email = FormulaValidators.email();
-        expect(email("test")).toBe(false);
+        expect(email("test", "email")).toBe(
+          "email field does not match the expected pattern."
+        );
       });
 
       it("Should return the error message when one is passed and the value does not match the provided email.", () => {
         const email = FormulaValidators.email("Error");
-        expect(email("test")).toBe("Error");
+        expect(email("test", "email")).toBe("Error");
       });
 
       it("Should return true when the value matches the provided email and no error message is passed.", () => {
         const email = FormulaValidators.email();
-        expect(email("test@test.com")).toBe(true);
+        expect(email("test@test.com", "email")).toBe(true);
       });
 
       it("Should return true when there is a value, even if an error message is passed.", () => {
         const email = FormulaValidators.email("Error");
-        expect(email("test@test.com")).toBe(true);
+        expect(email("test@test.com", "email")).toBe(true);
       });
     });
   });

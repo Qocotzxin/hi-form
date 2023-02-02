@@ -1,4 +1,4 @@
-export type ValidationFn = (value: any) => boolean | string;
+export type ValidationFn = (value: any, inputName: string) => boolean | string;
 export type FormulaValidations<T extends string> = Record<
   T,
   FormulaFieldOptions

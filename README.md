@@ -2,13 +2,11 @@
 
 ### Agnostic forms library.
 
-**Formula** is just a research about the possibilities of creating an agnostic library to manipulate forms, with an extremely easy and simple API.
-
-This exploration is using vanilla JS with Typescript to settle the basic features with working examples.
+**Formula** is a simple a simple form library that aims to provide the simplest API possible to manipulate forms. Formula goal is to be agnostic but for it only be tested using vanilla JS/TS and SolidJS.
 
 ## Usage
 
-Formula works with native HTML forms. Because of this, every input should have a name and in order to trigger the form submit, there needs to be a button or input with type="submit".
+Formula works with native HTML forms. Because of this, every input should have a name and in order to trigger the form submit, there needs to be a button with type="submit".
 
 ```
 <form>
@@ -133,6 +131,19 @@ As mentioned before, formula exposes a `subscribe` function which you can use to
 - `isDirty` - will be `false` until the user **types something** in the field (it doesn't matter if then the content is deleted by the user).
 - `errors` - will be an empty `array` by default. If validator functions are provided and they fail, all error messages returned by those functions will be stored here **in the order they were executed** (the same order they are passed in the configuration).
 
+### Validations.
+
+Formula exposes some built-in validator functions that can be used to simplify the experience. These validators are useful when you want to display an error message for the user in a different way than native HTML does, but keep in mind you can keep the code extremely simple by just using HTML native validations. So to put it simple, Formula provides 3 ways of validating an input:
+
+- Native HTML validations
+  - Just pass them to the input and they will just work :)
+- Custom functions
+  - Function with the signature `(value: any, inputName?: string) => boolean | string;`. If the condition you want to validate is false, you can return a string (which will be added into the errors array so you can use it as error message) and use the second parameter which is the input name.
+- Built-in validations
+  - By importing `FormulaValidators` you will have access to a set of basic but useful validations that, as the custom functions, use the input name to return a default error message when the validation fails if you don't pass one.
+
+The three of them will set the `aria-invalid` attribute to the input when failing, but native HTML validation will display the native HTML error-like tooltip, while the other show allows you to display a custom message in whatever way you want. HTML validation are extremely powerful, but sometimes designs are more complex, that's why Formula offers other options as well.
+
 ### Styling fields with errors
 
 When formula runs validations, it does not only take care about sending an event, but also adding the attribute `aria-invalid` to the specific input which can be used to style the input with css, something like this:
@@ -143,7 +154,59 @@ input[aria-invalid="true"] {
 }
 ```
 
+### Working example using SolidJS
+
+```
+const LoginForm: Component = () => {
+  const [formData, setFormData] = createSignal<FormulaValue<
+    "email" | "password"
+  > | null>(null);
+  let ref: HTMLFormElement | undefined;
+
+  onMount(() => {
+    const form = formula<"email" | "password">({
+      form: ref!,
+      globalOptions: {
+        validateDirtyOnly: false,
+      },
+    });
+
+    form.subscribe(setFormData);
+
+    onCleanup(form.unsubscribe);
+  });
+
+  return (
+    <form ref={ref}>
+      <div>
+        <div>
+          <label for="email">
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            placeholder="Email"
+            required
+          />
+          <p aria-live="polite">{formData()?.formData.email.errors[0]}</p>
+        </div>
+        <button
+          type="submit"
+          onClick={console.log}
+          disabled={!formData()?.formState.isValid}
+        >
+          Submit
+        </button>
+      </div>
+    </form>
+  );
+};
+```
+
 ## Upcoming features/fixes
 
 - Add more predefined validators.
 - Add tests for new functionalities (missing global options now).
+- Merge declaration files into 1.
+- Add documentation for predefined validators.

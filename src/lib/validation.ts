@@ -21,6 +21,7 @@ export const validationFns = {
     inputOptions?: FormulaFieldOptions
   ) {
     const { isValid, errors } = validationFns.isInputValid(
+      input.name,
       formData[input.name as T].value,
       inputOptions?.validators
     );
@@ -37,12 +38,17 @@ export const validationFns = {
    * Runs all provided validators against the specified value.
    */
   isInputValid(
+    inputName: string,
     value: unknown,
     validators?: ValidationFn[]
   ): InputValidationState {
     return !validators
       ? { isValid: true, errors: [] }
-      : validationFns.mapValidatorsToInputValidationState(value, validators);
+      : validationFns.mapValidatorsToInputValidationState(
+          value,
+          inputName,
+          validators
+        );
   },
 
   /**
@@ -56,11 +62,12 @@ export const validationFns = {
 
   mapValidatorsToInputValidationState(
     value: unknown,
+    inputName: string,
     validators: ValidationFn[]
   ): InputValidationState {
     return validators.reduce<InputValidationState>(
       (acc, cur) => {
-        const isValid = cur(value);
+        const isValid = cur(value, inputName);
         const errors = [...acc.errors];
 
         if (isString(isValid)) {
@@ -86,15 +93,28 @@ const emailRegex =
   /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
 export const FormulaValidators: FormulaCustomValidators = {
-  required: (errorMessage?: string) => (value: string) =>
-    !!value || errorMessage || false,
-  minLength: (min: number, errorMessage?: string) => (value: string) =>
-    value.length >= min || errorMessage || false,
-  maxLength: (max: number, errorMessage?: string) => (value: string) =>
-    value.length <= max || errorMessage || false,
+  required: (errorMessage?: string) => (value: string, inputName: string) =>
+    !!value || errorMessage || `${inputName} field is required.`,
+  minLength:
+    (min: number, errorMessage?: string) =>
+    (value: string, inputName: string) =>
+      value.length >= min ||
+      errorMessage ||
+      `${inputName} field needs to contain at least ${min} characters.`,
+  maxLength:
+    (max: number, errorMessage?: string) =>
+    (value: string, inputName: string) =>
+      value.length <= max ||
+      errorMessage ||
+      `${inputName} field needs to contain at the most ${max} characters.`,
   pattern:
-    (pattern: string | RegExp, errorMessage?: string) => (value: string) =>
-      new RegExp(pattern).test(value) || errorMessage || false,
-  email: (errorMessage?: string) => (value: string) =>
-    new RegExp(emailRegex).test(value) || errorMessage || false,
+    (pattern: string | RegExp, errorMessage?: string) =>
+    (value: string, inputName: string) =>
+      new RegExp(pattern).test(value) ||
+      errorMessage ||
+      `${inputName} field does not match the expected pattern.`,
+  email: (errorMessage?: string) => (value: string, inputName: string) =>
+    new RegExp(emailRegex).test(value) ||
+    errorMessage ||
+    `${inputName} field does not match the expected pattern.`,
 };
