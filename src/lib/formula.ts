@@ -1,39 +1,44 @@
 import { formDataFns } from "./data";
 import { getInputsAsArray } from "./dom";
 import { eventHandlingFns } from "./event-handling";
-import { subject } from "./subscription";
-import { FormulaValidations } from "./types";
+import { FormulaParams, FormulaValue } from "./types";
+import formSubject from "./utils/formSubject";
 
-export const formula = (
-  form: HTMLFormElement,
-  options?: FormulaValidations
-) => {
+export const formula = <T extends string>({
+  form,
+  fieldOptions,
+  globalOptions,
+}: FormulaParams<T>) => {
   if (!form) {
     throw new Error("Please provide a valid <form> element.");
   }
 
-  // Add warning if there are no inputs.
+  const subject = formSubject.getSubject();
   const inputs = getInputsAsArray(form);
-  const formData = formDataFns.createFormData(inputs);
-  const callbacks = eventHandlingFns.subscribeToInputChanges(
+  const formData = formDataFns.createFormData<T>(inputs);
+  const callbacks = eventHandlingFns.subscribeToInputChanges<T>(
     inputs,
     formData,
-    options
+    fieldOptions,
+    globalOptions
   );
-  const submitCallback = eventHandlingFns.subscribeToSubmitEvent(
+  const submitCallback = eventHandlingFns.subscribeToSubmitEvent<T>(
     form,
-    inputs,
-    formData,
-    options
+    formData
   );
 
   return {
     value: () => formData,
-    subscribe: (fn: () => void) => subject.subscribe(fn),
-    unsubscribe: () => subject.unsubscribe(),
-    finish: () => {
-      eventHandlingFns.unsubscribeFromInputChanges(inputs, callbacks, options);
+    subscribe: (fn: (data: FormulaValue<T>) => void) => subject.subscribe(fn),
+    unsubscribe: () => {
+      eventHandlingFns.unsubscribeFromInputChanges(
+        inputs,
+        callbacks,
+        fieldOptions,
+        globalOptions
+      );
       eventHandlingFns.unsubscribeFromSubmitEvent(form, submitCallback);
+      subject.unsubscribe();
     },
   };
 };

@@ -1,6 +1,14 @@
 import { defineConfig } from "vitest/config";
+import { resolve } from "path";
 
 export default defineConfig({
+  build: {
+    lib: {
+      entry: resolve(__dirname, "src/lib/index.ts"),
+      name: "MyLib",
+      fileName: "formula",
+    },
+  },
   server: {
     watch: {
       ignored: ["**/coverage/**"],

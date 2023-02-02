@@ -1,7 +1,6 @@
 import { emit } from "./subscription";
 import {
   ChangeCallbacks,
-  Events,
   FormFields,
   FormulaForm,
   FormulaValidations,
@@ -15,30 +14,34 @@ export const eventHandlingFns = {
   /**
    * Subscribes to input (or change), focus and blur events.
    */
-  subscribeToInputChanges: (
+  subscribeToInputChanges: <T extends string>(
     inputs: FormFields[],
-    formData: FormulaForm,
-    options?: FormulaValidations
+    formData: FormulaForm<T>,
+    options: Partial<FormulaValidations<T>> = {},
+    globalOptions?: FormulaFieldOptions
   ): ChangeCallbacks => {
     const fns: ChangeCallbacks = {};
     const { onChange, onBlur, onFocus } = eventHandlingFns;
 
     for (const input of inputs) {
-      const inputOptions = options && options[input.name];
+      const inputOptions = {
+        ...globalOptions,
+        ...(options && options[input.name as T]),
+      };
 
       fns[input.name] = {
         // 'Change' is kept as name to simplify internal logic since this is not exposed to the user.
-        [Events.change]: onChange(input, formData, inputOptions),
-        [Events.focus]: onFocus(input, formData, inputOptions),
-        [Events.blur]: onBlur(input, formData, inputOptions),
+        change: onChange(input, formData, inputOptions),
+        focus: onFocus(input, formData, inputOptions),
+        blur: onBlur(input, formData, inputOptions),
       };
 
       input.addEventListener(
-        inputOptions?.validateOn || Events.change,
+        inputOptions?.validateOn || "change",
         fns[input.name].change
       );
-      input.addEventListener(Events.focus, fns[input.name].focus);
-      input.addEventListener(Events.blur, fns[input.name].blur);
+      input.addEventListener("focus", fns[input.name].focus);
+      input.addEventListener("blur", fns[input.name].blur);
     }
 
     return fns;
@@ -47,34 +50,36 @@ export const eventHandlingFns = {
   /**
    * Unsubscribes from input (or change), focus and blur events.
    */
-  unsubscribeFromInputChanges: (
+  unsubscribeFromInputChanges: <T extends string>(
     inputs: FormFields[],
     fns: ChangeCallbacks,
-    options?: FormulaValidations
+    options: Partial<FormulaValidations<T>> = {},
+    globalOptions?: FormulaFieldOptions
   ) => {
     for (const input of inputs) {
-      const inputOptions = options && options[input.name];
+      const inputOptions = {
+        ...globalOptions,
+        ...(options && options[input.name as T]),
+      };
       input.removeEventListener(
-        inputOptions?.validateOn || Events.change,
+        inputOptions?.validateOn || "change",
         fns[input.name].change!
       );
-      input.removeEventListener(Events.focus, fns[input.name].focus);
-      input.removeEventListener(Events.blur, fns[input.name].blur);
+      input.removeEventListener("focus", fns[input.name].focus);
+      input.removeEventListener("blur", fns[input.name].blur);
     }
   },
 
   /**
    * Subscribes to the form submit event and returns the added listener.
    */
-  subscribeToSubmitEvent: (
+  subscribeToSubmitEvent: <T extends string>(
     form: HTMLFormElement,
-    inputs: FormFields[],
-    formData: FormulaForm,
-    options?: FormulaValidations
+    formData: FormulaForm<T>
   ): UserEvent => {
     const { onSubmit } = eventHandlingFns;
-    const onSubmitCallback = onSubmit(inputs, formData, options);
-    form.addEventListener(Events.submit, onSubmitCallback);
+    const onSubmitCallback = onSubmit(formData);
+    form.addEventListener("submit", onSubmitCallback);
     return onSubmitCallback;
   },
 
@@ -82,23 +87,27 @@ export const eventHandlingFns = {
    * Removes the listener attached to the form submit event.
    */
   unsubscribeFromSubmitEvent: (form: HTMLFormElement, callback: UserEvent) => {
-    form.removeEventListener(Events.submit, callback);
+    form.removeEventListener("submit", callback);
   },
 
   /**
    * Callback to be executed on focus event.
    * Does not execute validation.
    */
-  onFocus: (
+  onFocus: <T extends string>(
     input: FormFields,
-    formData: FormulaForm,
+    formData: FormulaForm<T>,
     inputOptions?: FormulaFieldOptions
   ) => {
     return (_: Event) => {
-      formData[input.name].isFocused = true;
+      formData[input.name as T].isFocused = true;
 
-      if (!inputOptions?.emitOn || inputOptions.emitOn.includes(Events.focus)) {
-        emit(Events.focus, formData[input.name]);
+      if (!inputOptions?.emitOn || inputOptions.emitOn.includes("focus")) {
+        emit<T>({
+          event: "focus",
+          formData,
+          formState: { isValid: validationFns.isFormValid(formData) },
+        });
       }
     };
   },
@@ -107,24 +116,28 @@ export const eventHandlingFns = {
    * Callback to be executed on blur event.
    * Executes conditional validation based on user options.
    */
-  onBlur: (
+  onBlur: <T extends string>(
     input: FormFields,
-    formData: FormulaForm,
+    formData: FormulaForm<T>,
     inputOptions?: FormulaFieldOptions
   ) => {
     return (_: Event) => {
-      formData[input.name].isFocused = false;
+      formData[input.name as T].isFocused = false;
 
-      if (!formData[input.name].isTouched) {
-        formData[input.name].isTouched = true;
+      if (!formData[input.name as T].isTouched) {
+        formData[input.name as T].isTouched = true;
 
         if (inputOptions?.validateDirtyOnly === false) {
-          validationFns.applyFieldValidation(input, formData, inputOptions);
+          validationFns.applyFieldValidation<T>(input, formData, inputOptions);
         }
       }
 
-      if (!inputOptions?.emitOn || inputOptions?.emitOn.includes(Events.blur)) {
-        emit(Events.blur, formData[input.name]);
+      if (!inputOptions?.emitOn || inputOptions?.emitOn.includes("blur")) {
+        emit<T>({
+          event: "blur",
+          formData,
+          formState: { isValid: validationFns.isFormValid(formData) },
+        });
       }
     };
   },
@@ -133,28 +146,32 @@ export const eventHandlingFns = {
    * Callback to be executed on input (or change) event.
    * Always executes validation.
    */
-  onChange: (
+  onChange: <T extends string>(
     input: FormFields,
-    formData: FormulaForm,
+    formData: FormulaForm<T>,
     inputOptions?: FormulaFieldOptions
   ) => {
     return (e: Event) => {
-      const selectedEvent = inputOptions?.validateOn || Events.change;
+      const selectedEvent = inputOptions?.validateOn || "change";
       const target = e.target as FormFields;
-      formData[input.name].value = isCheckbox(input)
+      formData[input.name as T].value = isCheckbox(input)
         ? !!(target as HTMLInputElement).checked
         : target.value;
-      validationFns.applyFieldValidation(input, formData, inputOptions);
+      validationFns.applyFieldValidation<T>(input, formData, inputOptions);
 
-      if (!formData[input.name].isDirty) {
-        formData[input.name].isDirty = true;
+      if (!formData[input.name as T].isDirty) {
+        formData[input.name as T].isDirty = true;
       }
 
       if (
         !inputOptions?.emitOn ||
         inputOptions?.emitOn.includes(selectedEvent)
       ) {
-        emit(selectedEvent, formData[input.name]);
+        emit<T>({
+          event: selectedEvent,
+          formData,
+          formState: { isValid: validationFns.isFormValid(formData) },
+        });
       }
     };
   },
@@ -163,28 +180,15 @@ export const eventHandlingFns = {
    * Callback to be executed on submit event.
    * Always executes validation.
    */
-  onSubmit: (
-    inputs: FormFields[],
-    formData: FormulaForm,
-    options?: FormulaValidations
-  ) => {
+  onSubmit: <T extends string>(formData: FormulaForm<T>) => {
     return (e: Event) => {
       e.preventDefault();
-      let isValid = true;
 
-      for (const input of inputs) {
-        validationFns.applyFieldValidation(
-          input,
-          formData,
-          options && options[input.name]
-        );
-
-        if (!formData[input.name].isValid) {
-          isValid = false;
-        }
-      }
-
-      emit(Events.submit, { formData, isValid });
+      emit<T>({
+        event: "submit",
+        formData,
+        formState: { isValid: validationFns.isFormValid(formData) },
+      });
     };
   },
 };

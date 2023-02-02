@@ -70,7 +70,17 @@ describe("Event handling functions.", () => {
       const textareaSpy = vi.spyOn(fields[1], "addEventListener");
       eventHandlingFns.subscribeToInputChanges(
         fields,
-        {},
+        {
+          email: {
+            isDirty: true,
+            isFocused: true,
+            isTouched: true,
+            isValid: true,
+            value: "",
+            errors: [],
+            _inputType: null,
+          },
+        },
         { email: { validateOn: "input" } }
       );
 
@@ -168,7 +178,7 @@ describe("Event handling functions.", () => {
     it("Should call onSubmit.", () => {
       const onSubmitSpy = vi.spyOn(eventHandlingFns, "onSubmit");
 
-      eventHandlingFns.subscribeToSubmitEvent(form, fields, {});
+      eventHandlingFns.subscribeToSubmitEvent(form, {});
 
       expect(onSubmitSpy).toHaveBeenCalledTimes(1);
     });
@@ -177,18 +187,14 @@ describe("Event handling functions.", () => {
       const onSubmitSpy = vi.spyOn(eventHandlingFns, "onSubmit");
       const formSpy = vi.spyOn(form, "addEventListener");
 
-      eventHandlingFns.subscribeToSubmitEvent(form, fields, {});
+      eventHandlingFns.subscribeToSubmitEvent(form, {});
 
       expect(onSubmitSpy).toHaveBeenCalledTimes(1);
       expect(formSpy).toHaveBeenCalledWith("submit", expect.any(Function));
     });
 
     it("Should return the attached callback.", () => {
-      const callback = eventHandlingFns.subscribeToSubmitEvent(
-        form,
-        fields,
-        {}
-      );
+      const callback = eventHandlingFns.subscribeToSubmitEvent(form, {});
 
       expect(callback).toEqual(expectOfTypeFunction);
     });
@@ -219,7 +225,11 @@ describe("Event handling functions.", () => {
       const focusEvent = eventHandlingFns.onFocus(fields[0], formData);
       focusEvent({} as Event);
 
-      expect(emit).toHaveBeenCalledWith("focus", formData.email);
+      expect(emit).toHaveBeenCalledWith({
+        event: "focus",
+        formData,
+        formState: { isValid: true },
+      });
     });
 
     it("Should return a function that, when executed, should NOT call emit if emitOn options is defined but focus is not in the array.", () => {
@@ -239,7 +249,11 @@ describe("Event handling functions.", () => {
       });
       focusEvent({} as Event);
 
-      expect(emit).toHaveBeenCalledWith("focus", formData.email);
+      expect(emit).toHaveBeenCalledWith({
+        event: "focus",
+        formData,
+        formState: { isValid: true },
+      });
     });
   });
 
@@ -249,7 +263,17 @@ describe("Event handling functions.", () => {
         validationFns,
         "applyFieldValidation"
       );
-      const formData = generateFormData({ email: { isFocused: true } });
+      const formData = generateFormData({
+        email: {
+          isFocused: true,
+          value: "test",
+          errors: [],
+          isValid: true,
+          isTouched: true,
+          isDirty: true,
+          _inputType: null,
+        },
+      });
       const blurEvent = eventHandlingFns.onBlur(fields[0], formData);
       blurEvent({} as Event);
 
@@ -263,7 +287,17 @@ describe("Event handling functions.", () => {
         validationFns,
         "applyFieldValidation"
       );
-      const formData = generateFormData({ email: { isFocused: true } });
+      const formData = generateFormData({
+        email: {
+          isFocused: true,
+          value: "test",
+          errors: [],
+          isValid: true,
+          isTouched: false,
+          isDirty: true,
+          _inputType: null,
+        },
+      });
       const blurEvent = eventHandlingFns.onBlur(fields[0], formData, {
         validateDirtyOnly: false,
       });
@@ -278,7 +312,11 @@ describe("Event handling functions.", () => {
       const blurEvent = eventHandlingFns.onBlur(fields[0], formData);
       blurEvent({} as Event);
 
-      expect(emit).toHaveBeenCalledWith("blur", formData.email);
+      expect(emit).toHaveBeenCalledWith({
+        event: "blur",
+        formData,
+        formState: { isValid: true },
+      });
     });
 
     it("Should return a function that, when executed, should NOT call emit if emitOn options is defined but blur is not in the array.", () => {
@@ -298,7 +336,11 @@ describe("Event handling functions.", () => {
       });
       blurEvent({} as Event);
 
-      expect(emit).toHaveBeenCalledWith("blur", formData.email);
+      expect(emit).toHaveBeenCalledWith({
+        event: "blur",
+        formData,
+        formState: { isValid: true },
+      });
     });
   });
 
@@ -317,7 +359,11 @@ describe("Event handling functions.", () => {
       expect(formData.email.value).toBe(mockEmail);
       expect(formData.email.isDirty).toBe(true);
       expect(applyFieldValidationSpy).toHaveBeenCalled();
-      expect(emit).toHaveBeenCalledWith("change", formData.email);
+      expect(emit).toHaveBeenCalledWith({
+        event: "change",
+        formData,
+        formState: { isValid: true },
+      });
     });
 
     it("Should update the value using a boolean if the element is a checkbox.", () => {
@@ -345,7 +391,11 @@ describe("Event handling functions.", () => {
       });
       changeEvent({ target: { value: mockEmail } } as unknown as Event);
 
-      expect(emit).toHaveBeenCalledWith("input", formData.email);
+      expect(emit).toHaveBeenCalledWith({
+        event: "input",
+        formData,
+        formState: { isValid: true },
+      });
     });
 
     it("Should return a function that, when executed, should NOT call emit if emitOn options is defined but 'change' is not in the array.", () => {
@@ -366,10 +416,14 @@ describe("Event handling functions.", () => {
 
       changeEvent({ target: { value: "" } } as unknown as Event);
 
-      expect(emit).toHaveBeenCalledWith("change", formData.email);
+      expect(emit).toHaveBeenCalledWith({
+        event: "change",
+        formData,
+        formState: { isValid: true },
+      });
     });
 
-    it("Should return a function that, when executed, should call emit if emitOn options is defined and 'input' is in the array.", () => {
+    it("Should return a function that, when executed, should call emit if emitOn option is defined and 'input' is in the array.", () => {
       const formData = generateFormData();
       const changeEvent = eventHandlingFns.onChange(fields[0], formData, {
         validateOn: "input",
@@ -378,7 +432,11 @@ describe("Event handling functions.", () => {
 
       changeEvent({ target: { value: "" } } as unknown as Event);
 
-      expect(emit).toHaveBeenCalledWith("input", formData.email);
+      expect(emit).toHaveBeenCalledWith({
+        event: "input",
+        formData,
+        formState: { isValid: true },
+      });
     });
   });
 
@@ -387,93 +445,47 @@ describe("Event handling functions.", () => {
       const preventDefaultMock = vi.fn();
       const formData = generateFormData();
 
-      const submitEvent = eventHandlingFns.onSubmit(fields, formData);
+      const submitEvent = eventHandlingFns.onSubmit(formData);
       submitEvent({ preventDefault: preventDefaultMock } as unknown as Event);
 
       expect(preventDefaultMock).toHaveBeenCalled();
     });
 
-    it("Should call applyFieldValidation 1 time per input passing undefined when there are no validators.", () => {
-      const applyFieldValidationSpy = vi.spyOn(
-        validationFns,
-        "applyFieldValidation"
-      );
+    it("Should call isFormValid.", () => {
+      const isFormValidSpy = vi.spyOn(validationFns, "isFormValid");
       const formData = generateFormData();
 
-      const submitEvent = eventHandlingFns.onSubmit(fields, formData);
+      const submitEvent = eventHandlingFns.onSubmit(formData);
       submitEvent({ preventDefault: vi.fn() } as unknown as Event);
 
-      expect(applyFieldValidationSpy).toHaveBeenCalledTimes(2);
-      expect(applyFieldValidationSpy).toHaveBeenNthCalledWith(
-        1,
-        fields[0],
-        formData,
-        undefined
-      );
-      expect(applyFieldValidationSpy).toHaveBeenNthCalledWith(
-        2,
-        fields[1],
-        formData,
-        undefined
-      );
-    });
-
-    it("Should call applyFieldValidation 1 time per input passing validator functions when passed within options.", () => {
-      const applyFieldValidationSpy = vi.spyOn(
-        validationFns,
-        "applyFieldValidation"
-      );
-      const validators = { validators: [(v: string) => !!v] };
-      const formData = generateFormData();
-
-      const submitEvent = eventHandlingFns.onSubmit(fields, formData, {
-        email: validators,
-        comments: validators,
-      });
-      submitEvent({ preventDefault: vi.fn() } as unknown as Event);
-
-      expect(applyFieldValidationSpy).toHaveBeenCalledTimes(2);
-      expect(applyFieldValidationSpy).toHaveBeenNthCalledWith(
-        1,
-        fields[0],
-        formData,
-        validators
-      );
-      expect(applyFieldValidationSpy).toHaveBeenNthCalledWith(
-        2,
-        fields[1],
-        formData,
-        validators
-      );
+      expect(isFormValidSpy).toHaveBeenCalledTimes(1);
+      expect(isFormValidSpy).toHaveBeenCalledWith(formData);
     });
 
     it("Should emit the updated form data and a validity boolean.", () => {
       const formData = generateFormData();
 
-      const submitEvent = eventHandlingFns.onSubmit(fields, formData);
+      const submitEvent = eventHandlingFns.onSubmit(formData);
       submitEvent({ preventDefault: vi.fn() } as unknown as Event);
 
-      expect(emit).toHaveBeenCalledWith("submit", {
+      expect(emit).toHaveBeenLastCalledWith({
+        event: "submit",
         formData,
-        isValid: true,
+        formState: { isValid: true },
       });
     });
 
-    it("Should emit the updated form data and isValid in false when at least one validator function fails.", () => {
-      const validators = {
-        validators: [(v: string) => v.length > 100 || "Error"],
-      };
+    it("Should emit the updated form data and isValid in false when at least one validation failed.", () => {
       const formData = generateFormData();
+      formData.comments.isValid = false;
 
-      const submitEvent = eventHandlingFns.onSubmit(fields, formData, {
-        email: validators,
-        comments: validators,
-      });
+      const submitEvent = eventHandlingFns.onSubmit(formData);
       submitEvent({ preventDefault: vi.fn() } as unknown as Event);
 
-      expect(emit).toHaveBeenCalledWith("submit", {
+      expect(emit).toHaveBeenLastCalledWith({
+        event: "submit",
         formData,
-        isValid: false,
+        formState: { isValid: false },
       });
     });
   });

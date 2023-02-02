@@ -1,11 +1,22 @@
 {
-  "name": "formulajs",
+  "name": "formula",
   "private": true,
   "version": "0.0.1",
   "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/formula.umd.cjs",
+  "module": "./dist/formula.js",
+  "exports": {
+    ".": {
+      "import": "./dist/formula.js",
+      "require": "./dist/formula.umd.cjs"
+    }
+  },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build && tsc && rm -rf dist/main.d.ts dist/vite.svg dist/lib/tests",
     "preview": "vite preview",
     "test": "vitest --coverage",
     "coverage": "vitest run --coverage",
@@ -24,5 +35,6 @@
   "dependencies": {
     "ramda": "^0.28.0",
     "rxjs": "^7.5.7"
-  }
+  },
+  "typings": "dist/lib/index.d.ts"
 }

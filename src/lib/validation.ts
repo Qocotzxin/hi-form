@@ -1,8 +1,9 @@
 import {
-  DataAttributes,
   FormFields,
-  FormulaForm,
+  FormulaCustomValidators,
   FormulaFieldOptions,
+  FormulaForm,
+  FormulaFormData,
   InputValidationState,
   InputValue,
   ValidationFn,
@@ -14,20 +15,21 @@ export const validationFns = {
    * Executes validation on the specified field.
    * Adds corresponding data attribute if needed.
    */
-  applyFieldValidation(
+  applyFieldValidation<T extends string>(
     input: FormFields,
-    formData: FormulaForm,
+    formData: FormulaForm<T>,
     inputOptions?: FormulaFieldOptions
   ) {
     const { isValid, errors } = validationFns.isInputValid(
-      formData[input.name].value,
+      formData[input.name as T].value,
       inputOptions?.validators
     );
-    formData[input.name].isValid = isValid;
-    formData[input.name].errors = errors;
+    const isNativeInputValid = input.reportValidity();
+    formData[input.name as T].isValid = isValid && isNativeInputValid;
+    formData[input.name as T].errors = errors;
     input.setAttribute(
-      DataAttributes.error,
-      String(!formData[input.name].isValid)
+      "aria-invalid",
+      String(!Boolean(formData[input.name as T].isValid))
     );
   },
 
@@ -41,6 +43,15 @@ export const validationFns = {
     return !validators
       ? { isValid: true, errors: [] }
       : validationFns.mapValidatorsToInputValidationState(value, validators);
+  },
+
+  /**
+   * Checks if all fields are valid using the formData state.
+   */
+  isFormValid: <T extends string>(formData: FormulaForm<T>): boolean => {
+    return Object.values<FormulaFormData>(formData).every(
+      (data) => data.isValid
+    );
   },
 
   mapValidatorsToInputValidationState(
@@ -66,4 +77,24 @@ export const validationFns = {
   },
 
   required: (value: InputValue) => !!value,
+};
+
+/**
+ * RFC 2822 standard email validation
+ */
+const emailRegex =
+  /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+
+export const FormulaValidators: FormulaCustomValidators = {
+  required: (errorMessage?: string) => (value: string) =>
+    !!value || errorMessage || false,
+  minLength: (min: number, errorMessage?: string) => (value: string) =>
+    value.length >= min || errorMessage || false,
+  maxLength: (max: number, errorMessage?: string) => (value: string) =>
+    value.length <= max || errorMessage || false,
+  pattern:
+    (pattern: string | RegExp, errorMessage?: string) => (value: string) =>
+      new RegExp(pattern).test(value) || errorMessage || false,
+  email: (errorMessage?: string) => (value: string) =>
+    new RegExp(emailRegex).test(value) || errorMessage || false,
 };

@@ -5,13 +5,13 @@ export const formDataFns = {
   /**
    * Returns the main formula object based on each input value and name.
    */
-  createFormData(inputs: FormFields[]): FormulaForm {
-    return inputs.reduce<FormulaForm>((acc, cur) => {
+  createFormData<T extends string>(inputs: FormFields[]): FormulaForm<T> {
+    return inputs.reduce<FormulaForm<any>>((acc, cur) => {
       return {
         ...acc,
         [cur.name]: {
           value: formDataFns.getInputValue(cur, acc[cur.name]?.value),
-          isValid: true,
+          isValid: !cur.required,
           isTouched: false,
           isFocused: false,
           isDirty: false,

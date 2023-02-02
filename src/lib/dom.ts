@@ -1,4 +1,4 @@
-import { Events, FormElements, FormFields } from "./types";
+import { FormElements, FormFields } from "./types";
 
 const FIELD_TYPES = Object.values(FormElements);
 
@@ -10,5 +10,5 @@ export function getInputsAsArray(form: HTMLFormElement): FormFields[] {
     Object.values(form.querySelectorAll(fieldType))
   )
     .flat()
-    .filter((input) => input.type !== Events.submit);
+    .filter((input) => input.type !== "submit");
 }

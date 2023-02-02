@@ -1,15 +1,58 @@
 export type ValidationFn = (value: any) => boolean | string;
-export type FormulaValidations = Record<string, FormulaFieldOptions>;
+export type FormulaValidations<T extends string> = Record<
+  T,
+  FormulaFieldOptions
+>;
+type LengthValidation = (minMax: number, errorMessage?: string) => ValidationFn;
+
+export interface FormulaCustomValidators {
+  required: (errorMessage?: string) => ValidationFn;
+  email: (errorMessage?: string) => ValidationFn;
+  minLength: LengthValidation;
+  maxLength: LengthValidation;
+  pattern: (pattern: string | RegExp, errorMessage?: string) => ValidationFn;
+}
+export interface FormulaParams<T extends string> {
+  form: HTMLFormElement;
+  globalOptions?: FormulaFieldOptions;
+  fieldOptions?: Partial<FormulaValidations<T>>;
+}
 export interface InputValidationState {
   isValid: boolean;
   errors: string[];
 }
 export interface FormulaFieldOptions {
+  /**
+   * An array of functions with the following signature:
+   * (value: any) => string | boolean
+   *
+   * When returning a string, it will be stored in the error messages array.
+   */
   validators?: ValidationFn[];
+
+  /**
+   * Formula runs validations on different events, one of those is the `change` event.
+   * But it can be replaced with the `input` event if you want to run validations
+   * each time the user types something in. Due to performance, `change` is recommended
+   * and is the default behavior.
+   */
   validateOn?: "input" | "change";
+
+  /**
+   * By default Formula won't run validations on `blur` if
+   * the input value never changed (which means the user never typed any value).
+   * This behavior can be modified by setting `validateDirtyOnly` to `false` in which case,
+   * validations will be executed when the user focus the input and then leaves
+   * (e.g.: when moving through the inputs using `tab`).
+   */
   validateDirtyOnly?: boolean;
   // Not using Events type here to provide a better DX.
-  emitOn?: Array<"change" | "input" | "focus" | "blur">;
+  /**
+   * An array of events to choose which ones will be emitted. If no array is passed
+   * then all events are emitted but if an empty array is passed,
+   * only submit event will be emitted (submit event is not optional).
+   */
+  emitOn?: Events[];
 }
 
 export type ChangeCallbacks = Record<
@@ -26,12 +69,17 @@ export type FormFields =
   | HTMLSelectElement
   | HTMLTextAreaElement;
 
-export interface FormulaForm {
-  [fieldName: string]: FormulaFormData;
+interface FormulaFormState {
+  isValid: boolean;
 }
+export type FormulaForm<T extends string> = {
+  [key in T]: FormulaFormData;
+};
 
-export interface FormulaFormPartial {
-  [fieldName: string]: Partial<FormulaFormData>;
+export interface FormulaValue<T extends string> {
+  event: Events;
+  formData: FormulaForm<T>;
+  formState: FormulaFormState;
 }
 
 export interface FormulaFormData {
@@ -46,13 +94,7 @@ export interface FormulaFormData {
 
 export type InputValue = string | number | boolean;
 
-export enum Events {
-  change = "change",
-  input = "input",
-  focus = "focus",
-  blur = "blur",
-  submit = "submit",
-}
+export type Events = "change" | "input" | "focus" | "blur" | "submit";
 
 export enum FormElements {
   input = "input",
@@ -88,10 +130,6 @@ export enum InputTypes {
 export enum FormSubmitElements {
   input = "input",
   button = "button",
-}
-
-export enum DataAttributes {
-  error = "data-formula-error",
 }
 
 export const TYPE_SUBMIT = '[type="submit]';
