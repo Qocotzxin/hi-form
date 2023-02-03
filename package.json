@@ -1,6 +1,19 @@
 {
   "name": "hi-form",
   "version": "0.1.4",
+  "keywords": [
+    "forms",
+    "solid",
+    "solidjs",
+    "agnostic",
+    "form",
+    "hiform",
+    "hi-form"
+  ],
+  "homepage": "https://github.com/Qocotzxin/hi-form#readme",
+  "bugs": "https://github.com/Qocotzxin/hi-form/issues",
+  "license": "GNU GPL",
+  "author": "Cristian Etchebarne",
   "type": "module",
   "files": [
     "dist"
