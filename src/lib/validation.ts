@@ -3,10 +3,10 @@ import {
   HiFormCustomValidators,
   HiFormFieldOptions,
   HiFormForm,
-  HiFormFormData,
+  HiFormFieldData,
   InputValidationState,
   InputValue,
-  ValidationFn,
+  HiFormValidationFn,
 } from "./types";
 import { isString } from "./utils/type-helpers";
 
@@ -40,7 +40,7 @@ export const validationFns = {
   isInputValid(
     inputName: string,
     value: unknown,
-    validators?: ValidationFn[]
+    validators?: HiFormValidationFn[]
   ): InputValidationState {
     return !validators
       ? { isValid: true, errors: [] }
@@ -55,7 +55,7 @@ export const validationFns = {
    * Checks if all fields are valid using the formData state.
    */
   isFormValid: <T extends string>(formData: HiFormForm<T>): boolean => {
-    return Object.values<HiFormFormData>(formData).every(
+    return Object.values<HiFormFieldData>(formData).every(
       (data) => data.isValid
     );
   },
@@ -63,7 +63,7 @@ export const validationFns = {
   mapValidatorsToInputValidationState(
     value: unknown,
     inputName: string,
-    validators: ValidationFn[]
+    validators: HiFormValidationFn[]
   ): InputValidationState {
     return validators.reduce<InputValidationState>(
       (acc, cur) => {

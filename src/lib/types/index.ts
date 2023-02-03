@@ -1,13 +1,22 @@
-export type ValidationFn = (value: any, inputName: string) => boolean | string;
+export type HiFormValidationFn = (
+  value: any,
+  inputName: string
+) => boolean | string;
 export type HiFormValidations<T extends string> = Record<T, HiFormFieldOptions>;
-type LengthValidation = (minMax: number, errorMessage?: string) => ValidationFn;
+type LengthValidation = (
+  minMax: number,
+  errorMessage?: string
+) => HiFormValidationFn;
 
 export interface HiFormCustomValidators {
-  required: (errorMessage?: string) => ValidationFn;
-  email: (errorMessage?: string) => ValidationFn;
+  required: (errorMessage?: string) => HiFormValidationFn;
+  email: (errorMessage?: string) => HiFormValidationFn;
   minLength: LengthValidation;
   maxLength: LengthValidation;
-  pattern: (pattern: string | RegExp, errorMessage?: string) => ValidationFn;
+  pattern: (
+    pattern: string | RegExp,
+    errorMessage?: string
+  ) => HiFormValidationFn;
 }
 export interface HiFormParams<T extends string> {
   form: HTMLFormElement;
@@ -25,7 +34,7 @@ export interface HiFormFieldOptions {
    *
    * When returning a string, it will be stored in the error messages array.
    */
-  validators?: ValidationFn[];
+  validators?: HiFormValidationFn[];
 
   /**
    * HiForm runs validations on different events, one of those is the `change` event.
@@ -70,7 +79,7 @@ interface HiFormFormState {
   isValid: boolean;
 }
 export type HiFormForm<T extends string> = {
-  [key in T]: HiFormFormData;
+  [key in T]: HiFormFieldData;
 };
 
 export interface HiFormValue<T extends string> {
@@ -79,7 +88,7 @@ export interface HiFormValue<T extends string> {
   formState: HiFormFormState;
 }
 
-export interface HiFormFormData {
+export interface HiFormFieldData {
   value: InputValue;
   isValid: boolean;
   isTouched: boolean;
