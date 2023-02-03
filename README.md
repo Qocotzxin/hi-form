@@ -64,7 +64,7 @@ In this case we pass a second argument called `fieldOptions` that is an object w
 - `validateDirtyOnly?: boolean` - by default hiForm won't run validations on `blur` if the input value never changed (which means the user never typed any value). This behavior can be changed by setting `validateDirtyOnly` to `false` in which case, validations will be executed when the user focus the input and then leaves (e.g.: when moving through the inputs using `tab`).
 - `emitOn?: Array<"change" | "input" | "focus" | "blur">` - an array of events to choose which ones will be emitted. If no array is passed then all events are emitted but if an empty array is passed, only submit event will be emitted (submit event is not optional).
 
-There is also a third argument called `globalOptions`. As you might have already guessed, this will apply options for every input instead of declaring them i na granular way. It accepts the same options as the `fieldOptions` field.
+There is also a third argument called `globalOptions`. As you might have already guessed, this will apply options for every input instead of declaring them in a granular way. It accepts the same options as the `fieldOptions` field.
 
 ```
 import { hiForm } from 'hiForm';
@@ -91,7 +91,7 @@ globalOptions: {
 form.subscribe(console.log);
 ```
 
-It's worth noting that, when passing both types of options, `fieldOptions` will override `globalOptions` for those fields that are being declared in both of them:
+It's worth noting that, when passing both types of options, `fieldOptions` will override `globalOptions` for primitive values that are declared in both of them, for example:
 
 ```
 import { hiForm } from 'hiForm';
@@ -101,7 +101,6 @@ const form = hiForm({
   fieldOptions: {
   firstName: {
     validators: [
-      (value: string) => !!value || "This field is required.",
       (value: string) =>
         value.length >= 5 || "Min length should be at least 5 characters.",
     ],
@@ -111,14 +110,15 @@ const form = hiForm({
   age: { validators: [(value: number) => value > 18] },
 },
 globalOptions: {
-  validateDirtyOnly: true
+  validateDirtyOnly: true,
+  validators: [HiFormValidators.required()]
 }
 });
 
-// In this example "validateDirtyOnly" will still be false for "firstName" field, but the validators are gonna be used.
-
 form.subscribe(console.log);
 ```
+
+Here "validateDirtyOnly" will still be false for "firstName" field, but true for the rest and the validators are gonna be applied in order, first globals and then field ones. Keep in mind error messages will be added to the error messages array in order of execution, so in this case, if all validations fails, the first error message will be the one returned by the `required` validation and then the one from the custom min length validation function.
 
 ### Subscribing
 
@@ -140,7 +140,7 @@ HiForm exposes some built-in validator functions that can be used to simplify th
 - Custom functions
   - Function with the signature `(value: any, inputName?: string) => boolean | string;`. If the condition you want to validate is false, you can return a string (which will be added into the errors array so you can use it as error message) and use the second parameter which is the input name.
 - Built-in validations
-  - By importing `HiFormValidators` you will have access to a set of basic but useful validations that, as the custom functions, use the input name to return a default error message when the validation fails if you don't pass one.
+  - By importing `HiFormValidators` you will have access to a set of basic but useful validations that, as the custom functions, use the input name to return a default error message when the validation fails if you don't pass one. The list of built-in validators include `required`, `email`, `minLength`, `maxLength` and `pattern`.
 
 The three of them will set the `aria-invalid` attribute to the input when failing, but native HTML validation will display the native HTML error-like tooltip, while the other show allows you to display a custom message in whatever way you want. HTML validation are extremely powerful, but sometimes designs are more complex, that's why HiForm offers other options as well.
 
@@ -208,5 +208,3 @@ const LoginForm: Component = () => {
 
 - Add more predefined validators.
 - Add tests for new functionalities (missing global options now).
-- Merge declaration files into 1.
-- Add documentation for predefined validators.

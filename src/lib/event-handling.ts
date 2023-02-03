@@ -7,6 +7,7 @@ import {
   HiFormFieldOptions,
   UserEvent,
 } from "./types";
+import { mergeOptions } from "./utils/options";
 import { isCheckbox } from "./utils/type-helpers";
 import { validationFns } from "./validation";
 
@@ -24,10 +25,10 @@ export const eventHandlingFns = {
     const { onChange, onBlur, onFocus } = eventHandlingFns;
 
     for (const input of inputs) {
-      const inputOptions = {
-        ...globalOptions,
-        ...(options && options[input.name as T]),
-      };
+      const inputOptions: HiFormFieldOptions = mergeOptions(
+        globalOptions,
+        options[input.name as T]
+      );
 
       fns[input.name] = {
         // 'Change' is kept as name to simplify internal logic since this is not exposed to the user.
@@ -57,10 +58,11 @@ export const eventHandlingFns = {
     globalOptions?: HiFormFieldOptions
   ) => {
     for (const input of inputs) {
-      const inputOptions = {
-        ...globalOptions,
-        ...(options && options[input.name as T]),
-      };
+      const inputOptions: HiFormFieldOptions = mergeOptions(
+        globalOptions,
+        options[input.name as T]
+      );
+
       input.removeEventListener(
         inputOptions?.validateOn || "change",
         fns[input.name].change!
