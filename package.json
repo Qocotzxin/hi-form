@@ -1,6 +1,6 @@
 {
   "name": "hi-form",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "files": [
     "dist"
@@ -15,7 +15,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tsc && rm -rf dist/main.d.ts dist/lib/tests",
+    "build": "vite build && tsc && mv dist/lib/types/index.d.ts dist && rm -rf dist/lib dist/main.d.ts",
     "preview": "vite preview",
     "test": "vitest --coverage",
     "coverage": "vitest run --coverage",
