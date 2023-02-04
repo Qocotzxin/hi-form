@@ -58,6 +58,26 @@ export interface HiFormFieldOptions {
    * only submit event will be emitted (submit event is not optional).
    */
   emitOn?: Events[];
+  /**
+   * A boolean to set the initial validity state of the specified input.
+   * By default, all inputs are invalid when hi-form creates the form state.
+   */
+  isInitiallyValid?: boolean;
+  /**
+   * A boolean to set the initial touched state of the specified input.
+   * By default, all inputs are untouched when hi-form creates the form state.
+   *
+   * Note: an input is touched when the user has focused it at least once.
+   */
+  isInitiallyTouched?: boolean;
+  /**
+   * A boolean to set the initial dirty state of the specified input.
+   * By default, all inputs are clean when hi-form creates the form state.
+   *
+   * Note: an input is dirty when the user has modified it, or from a different
+   * perspective, when a change/input event has been triggered at least once.
+   */
+  isInitiallyDirty?: boolean;
 }
 
 export type ChangeCallbacks = Record<

@@ -13,3 +13,10 @@ export function isCheckbox(input: FormFields): boolean {
 export function isRadio(input: FormFields): boolean {
   return input instanceof HTMLInputElement && input.type === InputTypes.radio;
 }
+
+export function returnValueOrType<T = boolean>(
+  value: boolean | undefined,
+  defaultBoolean: boolean | T
+): boolean | T {
+  return typeof value === "undefined" ? defaultBoolean : value;
+}

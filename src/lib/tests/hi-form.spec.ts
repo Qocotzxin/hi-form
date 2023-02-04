@@ -41,7 +41,7 @@ describe("HiForm main function.", () => {
       email: {
         isFocused: false,
         value: "",
-        isValid: true,
+        isValid: false,
         isTouched: false,
         isDirty: false,
         errors: [],
@@ -50,7 +50,7 @@ describe("HiForm main function.", () => {
       comments: {
         isFocused: false,
         value: "",
-        isValid: true,
+        isValid: false,
         isTouched: false,
         isDirty: false,
         errors: [],

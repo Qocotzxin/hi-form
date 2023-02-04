@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { isString, isRadio, isCheckbox } from "../../utils/type-helpers";
+import {
+  isString,
+  isRadio,
+  isCheckbox,
+  returnValueOrType,
+} from "../../utils/type-helpers";
 
 const checkbox = document.createElement("input");
 checkbox.setAttribute("type", "checkbox");
@@ -47,6 +52,16 @@ describe("Type helper functions.", () => {
 
     it("Should return false if the element is an input with a type other than checkbox.", () => {
       expect(isCheckbox(radio)).toBe(false);
+    });
+  });
+
+  describe("returnValueOrType", () => {
+    it("Should return the default boolean when value is undefined.", () => {
+      expect(returnValueOrType(undefined, true)).toBe(true);
+    });
+
+    it("Should return the value when it's defined.", () => {
+      expect(returnValueOrType(true, false)).toBe(true);
     });
   });
 });

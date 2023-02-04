@@ -72,10 +72,10 @@ describe("Event handling functions.", () => {
         fields,
         {
           email: {
-            isDirty: true,
-            isFocused: true,
-            isTouched: true,
-            isValid: true,
+            isDirty: false,
+            isFocused: false,
+            isTouched: false,
+            isValid: false,
             value: "",
             errors: [],
             _inputType: null,
@@ -228,7 +228,7 @@ describe("Event handling functions.", () => {
       expect(emit).toHaveBeenCalledWith({
         event: "focus",
         formData,
-        formState: { isValid: true },
+        formState: { isValid: false },
       });
     });
 
@@ -252,7 +252,7 @@ describe("Event handling functions.", () => {
       expect(emit).toHaveBeenCalledWith({
         event: "focus",
         formData,
-        formState: { isValid: true },
+        formState: { isValid: false },
       });
     });
   });
@@ -265,12 +265,12 @@ describe("Event handling functions.", () => {
       );
       const formData = generateFormData({
         email: {
-          isFocused: true,
+          isFocused: false,
           value: "test",
           errors: [],
-          isValid: true,
-          isTouched: true,
-          isDirty: true,
+          isValid: false,
+          isTouched: false,
+          isDirty: false,
           _inputType: null,
         },
       });
@@ -289,12 +289,12 @@ describe("Event handling functions.", () => {
       );
       const formData = generateFormData({
         email: {
-          isFocused: true,
+          isFocused: false,
           value: "test",
           errors: [],
-          isValid: true,
+          isValid: false,
           isTouched: false,
-          isDirty: true,
+          isDirty: false,
           _inputType: null,
         },
       });
@@ -315,7 +315,7 @@ describe("Event handling functions.", () => {
       expect(emit).toHaveBeenCalledWith({
         event: "blur",
         formData,
-        formState: { isValid: true },
+        formState: { isValid: false },
       });
     });
 
@@ -339,7 +339,7 @@ describe("Event handling functions.", () => {
       expect(emit).toHaveBeenCalledWith({
         event: "blur",
         formData,
-        formState: { isValid: true },
+        formState: { isValid: false },
       });
     });
   });
@@ -362,7 +362,7 @@ describe("Event handling functions.", () => {
       expect(emit).toHaveBeenCalledWith({
         event: "change",
         formData,
-        formState: { isValid: true },
+        formState: { isValid: false },
       });
     });
 
@@ -395,7 +395,7 @@ describe("Event handling functions.", () => {
       expect(emit).toHaveBeenCalledWith({
         event: "input",
         formData,
-        formState: { isValid: true },
+        formState: { isValid: false },
       });
     });
 
@@ -420,7 +420,7 @@ describe("Event handling functions.", () => {
       expect(emit).toHaveBeenCalledWith({
         event: "change",
         formData,
-        formState: { isValid: true },
+        formState: { isValid: false },
       });
     });
 
@@ -436,7 +436,7 @@ describe("Event handling functions.", () => {
       expect(emit).toHaveBeenCalledWith({
         event: "input",
         formData,
-        formState: { isValid: true },
+        formState: { isValid: false },
       });
     });
   });
@@ -472,7 +472,7 @@ describe("Event handling functions.", () => {
       expect(emit).toHaveBeenLastCalledWith({
         event: "submit",
         formData,
-        formState: { isValid: true },
+        formState: { isValid: false },
       });
     });
 

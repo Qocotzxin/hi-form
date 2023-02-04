@@ -37,7 +37,7 @@ export const generateFormData: (
   email: {
     isFocused: false,
     value: "",
-    isValid: true,
+    isValid: false,
     isTouched: false,
     isDirty: false,
     errors: [],
@@ -46,7 +46,7 @@ export const generateFormData: (
   comments: {
     isFocused: false,
     value: "",
-    isValid: true,
+    isValid: false,
     isTouched: false,
     isDirty: false,
     errors: [],

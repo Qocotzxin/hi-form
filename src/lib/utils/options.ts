@@ -1,4 +1,5 @@
 import { Events, HiFormFieldOptions, HiFormValidationFn } from "../types";
+import { returnValueOrType } from "./type-helpers";
 
 export function mergeOptions(
   globalOptions: HiFormFieldOptions | undefined,
@@ -11,15 +12,27 @@ export function mergeOptions(
 
   return {
     validateOn: fieldOptions?.validateOn || globalOptions?.validateOn,
-    validateDirtyOnly:
-      typeof fieldOptions?.validateDirtyOnly === "undefined"
-        ? globalOptions?.validateDirtyOnly
-        : fieldOptions.validateDirtyOnly,
+    validateDirtyOnly: returnValueOrType(
+      fieldOptions?.validateDirtyOnly,
+      globalOptions?.validateDirtyOnly
+    ),
     validators: mergeMaybeArray<HiFormValidationFn>(
       globalOptions?.validators,
       fieldOptions?.validators
     ),
     emitOn: emitOn.length ? emitOn : undefined,
+    isInitiallyDirty: returnValueOrType(
+      fieldOptions?.isInitiallyDirty,
+      globalOptions?.isInitiallyDirty
+    ),
+    isInitiallyTouched: returnValueOrType(
+      fieldOptions?.isInitiallyTouched,
+      globalOptions?.isInitiallyTouched
+    ),
+    isInitiallyValid: returnValueOrType(
+      fieldOptions?.isInitiallyDirty,
+      globalOptions?.isInitiallyDirty
+    ),
   };
 }
 

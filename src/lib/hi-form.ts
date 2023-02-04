@@ -15,7 +15,7 @@ export const hiForm = <T extends string>({
 
   const subject = formSubject.getSubject();
   const inputs = getInputsAsArray(form);
-  const formData = formDataFns.createFormData<T>(inputs);
+  const formData = formDataFns.createFormData<T>(inputs, fieldOptions);
   const callbacks = eventHandlingFns.subscribeToInputChanges<T>(
     inputs,
     formData,

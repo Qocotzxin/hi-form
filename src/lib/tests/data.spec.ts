@@ -52,6 +52,37 @@ describe("Data functions.", () => {
     it("Should return an empty object when an empty array is passed (no inputs provided).", () => {
       expect(formDataFns.createFormData([])).toEqual({});
     });
+
+    it("Should return the initial value when there is one and false when there is not (for isValid, isTouched and isDirty).", () => {
+      expect(
+        formDataFns.createFormData(
+          [
+            generateStandaloneInput([
+              { attr: "type", value: InputTypes.radio },
+              { attr: "checked", value: "" },
+              { attr: "value", value: "firstValue" },
+              { attr: "name", value: "test" },
+            ]),
+          ],
+          {
+            test: {
+              isInitiallyValid: true,
+              isInitiallyTouched: false,
+            },
+          }
+        )
+      ).toEqual({
+        test: {
+          value: "firstValue",
+          isValid: true,
+          isTouched: false,
+          isFocused: false,
+          isDirty: false,
+          errors: [],
+          _inputType: InputTypes.radio,
+        },
+      });
+    });
   });
 
   describe("getInputValue", () => {

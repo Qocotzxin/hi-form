@@ -49,6 +49,25 @@ describe("Options helpers.", () => {
       });
     });
 
+    it("Should return validateOn from globalOptions when field is undefined.", () => {
+      expect(
+        mergeOptions(
+          {
+            validateOn: "input",
+          },
+          {}
+        )
+      ).toEqual({
+        validateOn: "input",
+        emitOn: undefined,
+        isInitiallyDirty: undefined,
+        isInitiallyTouched: undefined,
+        isInitiallyValid: undefined,
+        validateDirtyOnly: undefined,
+        validators: [],
+      });
+    });
+
     it("Should return emitOn field in undefined if the result of mergeMaybeArray is an empty array for that field.", () => {
       const required = HiFormValidators.required();
       const minLength = HiFormValidators.minLength(2);

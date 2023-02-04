@@ -207,4 +207,3 @@ const LoginForm: Component = () => {
 ## Upcoming features/fixes
 
 - Add more predefined validators.
-- Add tests for new functionalities (missing global options now).

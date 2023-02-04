@@ -1,20 +1,38 @@
-import { FormFields, HiFormForm, InputTypes, InputValue } from "./types";
-import { isCheckbox, isRadio } from "./utils/type-helpers";
+import {
+  FormFields,
+  HiFormForm,
+  HiFormValidations,
+  InputTypes,
+  InputValue,
+} from "./types";
+import { isCheckbox, isRadio, returnValueOrType } from "./utils/type-helpers";
 
 export const formDataFns = {
   /**
    * Returns the main hiForm object based on each input value and name.
    */
-  createFormData<T extends string>(inputs: FormFields[]): HiFormForm<T> {
+  createFormData<T extends string>(
+    inputs: FormFields[],
+    fieldOptions?: Partial<HiFormValidations<T>>
+  ): HiFormForm<T> {
     return inputs.reduce<HiFormForm<any>>((acc, cur) => {
       return {
         ...acc,
         [cur.name]: {
           value: formDataFns.getInputValue(cur, acc[cur.name]?.value),
-          isValid: !cur.required,
-          isTouched: false,
+          isValid: returnValueOrType(
+            fieldOptions?.[cur.name as T]?.isInitiallyValid,
+            false
+          ),
+          isTouched: returnValueOrType(
+            fieldOptions?.[cur.name as T]?.isInitiallyTouched,
+            false
+          ),
           isFocused: false,
-          isDirty: false,
+          isDirty: returnValueOrType(
+            fieldOptions?.[cur.name as T]?.isInitiallyDirty,
+            false
+          ),
           errors: [],
           _inputType:
             cur instanceof HTMLInputElement ? (cur.type as InputTypes) : null,
