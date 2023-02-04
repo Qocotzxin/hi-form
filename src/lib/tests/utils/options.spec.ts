@@ -48,5 +48,32 @@ describe("Options helpers.", () => {
         emitOn: ["blur", "focus"],
       });
     });
+
+    it("Should return emitOn field in undefined if the result of mergeMaybeArray is an empty array for that field.", () => {
+      const required = HiFormValidators.required();
+      const minLength = HiFormValidators.minLength(2);
+
+      expect(
+        mergeOptions(
+          {
+            validateOn: "input",
+            validateDirtyOnly: false,
+            validators: [required],
+            emitOn: undefined,
+          },
+          {
+            validateOn: "change",
+            validateDirtyOnly: true,
+            validators: [minLength],
+            emitOn: [],
+          }
+        )
+      ).toEqual({
+        validateOn: "change",
+        validateDirtyOnly: true,
+        validators: [required, minLength],
+        emitOn: undefined,
+      });
+    });
   });
 });

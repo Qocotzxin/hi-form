@@ -214,7 +214,7 @@ describe("Event handling functions.", () => {
   describe("onFocus", () => {
     it("Should return a function that, when executed, updates isFocused to true within formData.", () => {
       const formData = generateFormData();
-      const focusEvent = eventHandlingFns.onFocus(fields[0], formData);
+      const focusEvent = eventHandlingFns.onFocus(fields[0], formData, {});
       focusEvent({} as Event);
 
       expect(formData.email.isFocused).toBe(true);
@@ -222,7 +222,7 @@ describe("Event handling functions.", () => {
 
     it("Should return a function that, when executed, emits an event using the behavior subject if emitOn option is not passed.", () => {
       const formData = generateFormData();
-      const focusEvent = eventHandlingFns.onFocus(fields[0], formData);
+      const focusEvent = eventHandlingFns.onFocus(fields[0], formData, {});
       focusEvent({} as Event);
 
       expect(emit).toHaveBeenCalledWith({
@@ -274,7 +274,7 @@ describe("Event handling functions.", () => {
           _inputType: null,
         },
       });
-      const blurEvent = eventHandlingFns.onBlur(fields[0], formData);
+      const blurEvent = eventHandlingFns.onBlur(fields[0], formData, {});
       blurEvent({} as Event);
 
       expect(formData.email.isFocused).toBe(false);
@@ -309,7 +309,7 @@ describe("Event handling functions.", () => {
     it("Should return a function that, when executed, emits an event using the behavior subject if emitOn is not passed.", () => {
       const formData = generateFormData();
 
-      const blurEvent = eventHandlingFns.onBlur(fields[0], formData);
+      const blurEvent = eventHandlingFns.onBlur(fields[0], formData, {});
       blurEvent({} as Event);
 
       expect(emit).toHaveBeenCalledWith({
@@ -353,7 +353,7 @@ describe("Event handling functions.", () => {
       const mockEmail = "test@mail.com";
       const formData = generateFormData();
 
-      const changeEvent = eventHandlingFns.onChange(fields[0], formData);
+      const changeEvent = eventHandlingFns.onChange(fields[0], formData, {});
       changeEvent({ target: { value: mockEmail } } as unknown as Event);
 
       expect(formData.email.value).toBe(mockEmail);
@@ -375,7 +375,8 @@ describe("Event handling functions.", () => {
           { attr: "value", value: "" },
           { attr: "name", value: "email" },
         ]),
-        formData
+        formData,
+        {}
       );
       changeEvent({ target: { checked: true } } as unknown as Event);
 

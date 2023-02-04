@@ -99,12 +99,12 @@ export const eventHandlingFns = {
   onFocus: <T extends string>(
     input: FormFields,
     formData: HiFormForm<T>,
-    inputOptions?: HiFormFieldOptions
+    inputOptions: HiFormFieldOptions
   ) => {
     return (_: Event) => {
       formData[input.name as T].isFocused = true;
 
-      if (!inputOptions?.emitOn || inputOptions.emitOn.includes("focus")) {
+      if (!inputOptions.emitOn || inputOptions.emitOn.includes("focus")) {
         emit<T>({
           event: "focus",
           formData,
@@ -121,7 +121,7 @@ export const eventHandlingFns = {
   onBlur: <T extends string>(
     input: FormFields,
     formData: HiFormForm<T>,
-    inputOptions?: HiFormFieldOptions
+    inputOptions: HiFormFieldOptions
   ) => {
     return (_: Event) => {
       formData[input.name as T].isFocused = false;
@@ -134,7 +134,7 @@ export const eventHandlingFns = {
         }
       }
 
-      if (!inputOptions?.emitOn || inputOptions?.emitOn.includes("blur")) {
+      if (!inputOptions.emitOn || inputOptions?.emitOn.includes("blur")) {
         emit<T>({
           event: "blur",
           formData,
@@ -151,7 +151,7 @@ export const eventHandlingFns = {
   onChange: <T extends string>(
     input: FormFields,
     formData: HiFormForm<T>,
-    inputOptions?: HiFormFieldOptions
+    inputOptions: HiFormFieldOptions
   ) => {
     return (e: Event) => {
       const selectedEvent = inputOptions?.validateOn || "change";
@@ -166,7 +166,7 @@ export const eventHandlingFns = {
       }
 
       if (
-        !inputOptions?.emitOn ||
+        !inputOptions.emitOn ||
         inputOptions?.emitOn.includes(selectedEvent)
       ) {
         emit<T>({

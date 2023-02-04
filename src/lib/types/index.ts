@@ -52,7 +52,6 @@ export interface HiFormFieldOptions {
    * (e.g.: when moving through the inputs using `tab`).
    */
   validateDirtyOnly?: boolean;
-  // Not using Events type here to provide a better DX.
   /**
    * An array of events to choose which ones will be emitted. If no array is passed
    * then all events are emitted but if an empty array is passed,
