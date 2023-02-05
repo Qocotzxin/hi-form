@@ -108,7 +108,8 @@ export interface HiFormValue<T extends string> {
 }
 
 export interface HiFormFieldData {
-  value: InputValue;
+  value: string;
+  checked?: boolean;
   isValid: boolean;
   isTouched: boolean;
   isFocused: boolean;
@@ -116,8 +117,6 @@ export interface HiFormFieldData {
   errors: string[];
   _inputType: InputTypes | null;
 }
-
-export type InputValue = string | number | boolean;
 
 export type Events = "change" | "input" | "focus" | "blur" | "submit";
 

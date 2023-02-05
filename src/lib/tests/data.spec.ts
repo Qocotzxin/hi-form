@@ -116,7 +116,7 @@ describe("Data functions.", () => {
       );
     });
 
-    it("Should return the current input value as boolean when the input is of type checkbox.", () => {
+    it("Should return the current input value when the input is of type checkbox.", () => {
       const previousValue = "previousValue";
       const currentValue = "currentValue";
       const input = generateStandaloneInput([
@@ -125,7 +125,22 @@ describe("Data functions.", () => {
         { attr: "value", value: currentValue },
       ]);
 
-      expect(formDataFns.getInputValue(input, previousValue)).toBe(true);
+      expect(formDataFns.getInputValue(input, previousValue)).toBe(
+        "currentValue"
+      );
+    });
+
+    it("Should return the previous input value when the input is of type checkbox and is not checked.", () => {
+      const previousValue = "previousValue";
+      const currentValue = "currentValue";
+      const input = generateStandaloneInput([
+        { attr: "type", value: InputTypes.checkbox },
+        { attr: "value", value: currentValue },
+      ]);
+
+      expect(formDataFns.getInputValue(input, previousValue)).toBe(
+        "previousValue"
+      );
     });
 
     it("Should return the current input value when the input is neither type radio nor checkbox.", () => {

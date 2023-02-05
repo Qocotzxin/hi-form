@@ -5,7 +5,6 @@ import {
   HiFormForm,
   HiFormFieldData,
   InputValidationState,
-  InputValue,
   HiFormValidationFn,
 } from "./types";
 import { isString } from "./utils/type-helpers";
@@ -83,7 +82,7 @@ export const validationFns = {
     );
   },
 
-  required: (value: InputValue) => !!value,
+  required: (value: string) => !!value,
 };
 
 /**

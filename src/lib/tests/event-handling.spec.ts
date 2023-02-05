@@ -366,21 +366,24 @@ describe("Event handling functions.", () => {
       });
     });
 
-    it("Should update the value using a boolean if the element is a checkbox.", () => {
+    it("Should update the value with the strin value and the checked field using a boolean if the element is a checkbox.", () => {
       const formData = generateFormData();
 
       const changeEvent = eventHandlingFns.onChange(
         generateStandaloneInput([
           { attr: "type", value: InputTypes.checkbox },
-          { attr: "value", value: "" },
+          { attr: "value", value: "test" },
           { attr: "name", value: "email" },
         ]),
         formData,
         {}
       );
-      changeEvent({ target: { checked: true } } as unknown as Event);
+      changeEvent({
+        target: { checked: true, value: "test" },
+      } as unknown as Event);
 
-      expect(formData.email.value).toBe(true);
+      expect(formData.email.value).toBe("test");
+      expect(formData.email.checked).toBe(true);
     });
 
     it("Should call emit with input instead of change if validateOn value is input.", () => {

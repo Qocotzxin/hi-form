@@ -1,10 +1,4 @@
-import {
-  FormFields,
-  HiFormForm,
-  HiFormValidations,
-  InputTypes,
-  InputValue,
-} from "./types";
+import { FormFields, HiFormForm, HiFormValidations, InputTypes } from "./types";
 import { isCheckbox, isRadio, returnValueOrType } from "./utils/type-helpers";
 
 export const formDataFns = {
@@ -46,14 +40,14 @@ export const formDataFns = {
    */
   getInputValue(
     input: FormFields,
-    previousInputValue: InputValue | undefined
-  ): InputValue {
-    return isRadio(input)
-      ? (input as HTMLInputElement).checked
+    previousInputValue: string | undefined
+  ): string {
+    if (isCheckbox(input) || isRadio(input)) {
+      return (input as HTMLInputElement).checked
         ? input.value
-        : previousInputValue || ""
-      : isCheckbox(input)
-      ? (input as HTMLInputElement).checked
-      : input.value;
+        : previousInputValue || "";
+    }
+
+    return input.value;
   },
 };

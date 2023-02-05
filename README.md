@@ -207,3 +207,4 @@ const LoginForm: Component = () => {
 ## Upcoming features/fixes
 
 - Add more predefined validators.
+- Analyze if a state for isSubmitting + onSubmit callback API is worth.

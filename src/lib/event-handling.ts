@@ -156,9 +156,13 @@ export const eventHandlingFns = {
     return (e: Event) => {
       const selectedEvent = inputOptions?.validateOn || "change";
       const target = e.target as FormFields;
-      formData[input.name as T].value = isCheckbox(input)
-        ? !!(target as HTMLInputElement).checked
-        : target.value;
+      formData[input.name as T].value = target.value;
+
+      if (isCheckbox(input)) {
+        formData[input.name as T].checked = !!(target as HTMLInputElement)
+          .checked;
+      }
+
       validationFns.applyFieldValidation<T>(input, formData, inputOptions);
 
       if (!formData[input.name as T].isDirty) {
