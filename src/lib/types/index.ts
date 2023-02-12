@@ -78,6 +78,22 @@ export interface HiFormFieldOptions {
    * perspective, when a change/input event has been triggered at least once.
    */
   isInitiallyDirty?: boolean;
+
+  /**
+   * For simple forms usually is easier to just let hi-form control
+   * the input values and send it back to you, but there are cases
+   * where you need to have full control of the value, either to apply
+   * modifications, for example adding an input mask, or to provide
+   * a prefilled value. For those cases you can provide the value option
+   * which usually will be a signal/state.
+   */
+  value?: string;
+
+  /**
+   * On change event is usually provided along with value to update it
+   * outside hi-form.
+   */
+  onChange?: (value: string) => void;
 }
 
 export type ChangeCallbacks = Record<

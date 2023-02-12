@@ -13,7 +13,9 @@ export const formDataFns = {
       return {
         ...acc,
         [cur.name]: {
-          value: formDataFns.getInputValue(cur, acc[cur.name]?.value),
+          value:
+            fieldOptions?.[cur.name as T]?.value ||
+            formDataFns.getInputValue(cur, acc[cur.name]?.value),
           isValid: returnValueOrType(
             fieldOptions?.[cur.name as T]?.isInitiallyValid,
             false
